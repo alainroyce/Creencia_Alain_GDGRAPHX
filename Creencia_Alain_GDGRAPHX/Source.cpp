@@ -147,7 +147,7 @@ int main() {
 	//LoadSkybox shader
 	GLuint skyboxShderProgram = LoadShaders("Shaders/skybox_vertex.shader", "Shaders/skybox_fragment.shader"); //changes
 
-	GLuint shaderProgram = LoadShaders("Shaders/vertex.shader", "Shaders/fragment.shader"); //changes
+	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_fragment.shader"); //changes
 	glUseProgram(shaderProgram);
 
 	GLuint colorLoc = glGetUniformLocation(shaderProgram, "u_color");
@@ -179,10 +179,11 @@ int main() {
 
 	//setup light shading; position of the flash light; changes
 	GLuint lightPoscLoc = glGetUniformLocation(shaderProgram, "u_light_pos"); //changes
+	//glUniform3f(lightPoscLoc, 0.0f, 1.0f, 0.0f);
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir"); //changes
-	glUniform3f(lightPoscLoc, trans2[3][0], trans2[3][1], trans2[3][1] - 0.01f); //changes
+	glUniform3f(lightPoscLoc, trans1[3][0], trans1[3][1]+1.0f, trans1[3][1]); //changes
 	glUniform3f(lightDirLoc, 1.0f, 1.0f, 1.0f); //changes
-
+	//glUniform3f(lightDirLoc, 0.0f, 1.0f, 0.0f);
 
 #pragma endregion
 
@@ -340,7 +341,7 @@ int main() {
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, 0.0f)); // matrix * translate_matrix
-		trans1 = glm::scale(trans1, glm::vec3(10.0f, 10.0f, 1.0f));
+		trans1 = glm::scale(trans1, glm::vec3(1.0f, 1.0f, 1.0f));
 
 		//send to shader
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1)); //changes
