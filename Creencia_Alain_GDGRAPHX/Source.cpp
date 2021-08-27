@@ -267,6 +267,7 @@ int main() {
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
 		xFactor2 += deltaTime * xSpeed2;
+		prevTime = currentTime;
 
 		//draw earth
 		glDrawElements(GL_TRIANGLES, earth.numFaces, GL_UNSIGNED_INT, (void*)0);

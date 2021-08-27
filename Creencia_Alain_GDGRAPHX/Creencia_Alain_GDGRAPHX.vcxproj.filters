@@ -33,6 +33,24 @@
     <None Include="Shaders\phong_fragment.shader">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="packages.config" />
+    <None Include="Assets\building\barangay.mtl" />
+    <None Include="Assets\backpack\backpack.mtl" />
+    <None Include="Assets\crate\crate1.mtl" />
+    <None Include="Assets\plane\plane.mtl" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\CL.command.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\CL.read.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\CL.write.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\Creencia_Alain_GDGRAPHX.lastbuildstate" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\link.command.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\link.read.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\link.write.1.tlog" />
+    <None Include="Debug\Creencia_Alain_GDGRAPHX.exe.recipe" />
+    <None Include="Debug\Creencia_Alain_GDGRAPHX.ilk" />
+    <None Include="Debug\vc142.idb" />
+    <None Include="Debug\vc142.pdb" />
+    <None Include="Shaders\fragment.shader" />
+    <None Include="Shaders\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -43,5 +61,66 @@
     <ClInclude Include="skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tiny_obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="obj_mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Debug\Source.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\earth\Earth.tga" />
+    <Image Include="Assets\earth\Moon.tga" />
+    <Image Include="Assets\earth\Sun.tga" />
+    <Image Include="Assets\skybox\back.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\skybox\bottom.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\skybox\front.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\skybox\left.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\skybox\right.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\skybox\top.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\building\building 01_c.tga" />
+    <Image Include="Assets\building\building 06_ c .tga" />
+    <Image Include="Assets\building\building 06_ c.tga" />
+    <Image Include="Assets\building\building_016_c.tga" />
+    <Image Include="Assets\building\building_025_c.tga" />
+    <Image Include="Assets\building\Building_V01_C.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\building\Building_V02_C.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\building\building03_c.tga" />
+    <Image Include="Assets\building\building05 _c.tga" />
+    <Image Include="Assets\backpack\diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\crate\T_crate1_D.tga" />
+    <Image Include="Assets\crate\T_crate1_N.tga" />
+    <Image Include="Assets\crate\T_crate1_S.tga" />
+    <Image Include="Assets\plane\T_crate1_D.tga" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Debug\Creencia_Alain_GDGRAPHX.vcxproj.FileListAbsolute.txt" />
   </ItemGroup>
 </Project>

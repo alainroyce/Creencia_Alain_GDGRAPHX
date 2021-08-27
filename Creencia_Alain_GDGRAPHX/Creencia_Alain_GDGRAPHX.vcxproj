@@ -122,6 +122,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,21 +140,76 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="Assets\backpack\backpack.mtl" />
+    <None Include="Assets\building\barangay.mtl" />
+    <None Include="Assets\crate\crate1.mtl" />
     <None Include="Assets\earth\Earth.mtl" />
+    <None Include="Assets\plane\plane.mtl" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\CL.command.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\CL.read.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\CL.write.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\Creencia_Alain_GDGRAPHX.lastbuildstate" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\link.command.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\link.read.1.tlog" />
+    <None Include="Debug\Creencia.57d6d6d7.tlog\link.write.1.tlog" />
+    <None Include="Debug\Creencia_Alain_GDGRAPHX.exe.recipe" />
+    <None Include="Debug\Creencia_Alain_GDGRAPHX.ilk" />
+    <None Include="Debug\vc142.idb" />
+    <None Include="Debug\vc142.pdb" />
+    <None Include="packages.config" />
+    <None Include="Shaders\fragment.shader" />
     <None Include="Shaders\phong_directional_fragment.shader" />
     <None Include="Shaders\phong_fragment.shader" />
     <None Include="Shaders\phong_vertex.shader" />
     <None Include="Shaders\skybox_fragment.shader" />
     <None Include="Shaders\skybox_vertex.shader" />
+    <None Include="Shaders\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="obj_mesh.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="skybox.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="tiny_obj_loader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Debug\Source.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\backpack\diffuse.jpg" />
+    <Image Include="Assets\building\building 01_c.tga" />
+    <Image Include="Assets\building\building 06_ c .tga" />
+    <Image Include="Assets\building\building 06_ c.tga" />
+    <Image Include="Assets\building\building03_c.tga" />
+    <Image Include="Assets\building\building05 _c.tga" />
+    <Image Include="Assets\building\building_016_c.tga" />
+    <Image Include="Assets\building\building_025_c.tga" />
+    <Image Include="Assets\building\Building_V01_C.png" />
+    <Image Include="Assets\building\Building_V02_C.png" />
+    <Image Include="Assets\crate\T_crate1_D.tga" />
+    <Image Include="Assets\crate\T_crate1_N.tga" />
+    <Image Include="Assets\crate\T_crate1_S.tga" />
+    <Image Include="Assets\earth\Earth.tga" />
+    <Image Include="Assets\earth\Moon.tga" />
+    <Image Include="Assets\earth\Sun.tga" />
+    <Image Include="Assets\plane\T_crate1_D.tga" />
+    <Image Include="Assets\skybox\back.png" />
+    <Image Include="Assets\skybox\bottom.png" />
+    <Image Include="Assets\skybox\front.png" />
+    <Image Include="Assets\skybox\left.png" />
+    <Image Include="Assets\skybox\right.png" />
+    <Image Include="Assets\skybox\top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Debug\Creencia_Alain_GDGRAPHX.vcxproj.FileListAbsolute.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
