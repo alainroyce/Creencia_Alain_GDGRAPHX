@@ -57,7 +57,7 @@ int main() {
 		earthOffsets
 	);
 
-	ObjData moon;
+	/*ObjData moon;
 	//backpack.textures = 
 	LoadObjFile(&moon, "earth/Earth.obj");
 	GLfloat moonOffsets[] = { 0.0f, 0.0f, 0.0f };
@@ -75,7 +75,7 @@ int main() {
 		&sun,
 		1.0f,
 		sunOffsets
-	);
+	);*/
 
 	//Load skybox model; changes below
 	std::vector<std::string> faces{
@@ -94,7 +94,7 @@ int main() {
 	//LoadSkybox shader
 	GLuint skyboxShderProgram = LoadShaders("Shaders/skybox_vertex.shader", "Shaders/skybox_fragment.shader"); //changes
 
-	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_fragment.shader"); //changes
+	GLuint shaderProgram = LoadShaders("Shaders/vertex.shader", "Shaders/fragment.shader"); //changes
 	glUseProgram(shaderProgram);
 
 	GLuint colorLoc = glGetUniformLocation(shaderProgram, "u_color");
@@ -193,7 +193,7 @@ int main() {
 
 		glm::mat4 view;
 		//camera position
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -7.0f); //changes
+		glm::vec3 cameraPos = glm::vec3(0.0f, 5.0f, -20.0f); //changes
 		// side look
 		view = glm::lookAt(
 			cameraPos,
@@ -214,7 +214,7 @@ int main() {
 
 		DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
 
-		////////// SUN
+		/*////////// SUN
 		glBindVertexArray(sun.vaoId);
 		glUseProgram(shaderProgram); //changes
 
@@ -241,7 +241,7 @@ int main() {
 
 		//unbindtexture after rendering
 		glBindTexture(GL_TEXTURE_2D, 0);
-
+		*/
 
 		//////////////EARTH
 		glBindVertexArray(earth.vaoId);
@@ -250,7 +250,7 @@ int main() {
 		// transforms
 		trans1 = glm::mat4(1.0f); // identity
 		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
-		trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
+		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
 		trans1 = glm::translate(trans1, glm::vec3(-3.0f, 0.0f, -3.0f)); // matrix * translate_matrix
 		trans1 = glm::scale(trans1, glm::vec3(0.25f, 0.25f, 0.25f));
 
@@ -274,7 +274,7 @@ int main() {
 		//unbindtexture after rendering
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		////////// MOON
+		/*////////// MOON
 		glBindVertexArray(moon.vaoId);
 		glUseProgram(shaderProgram); //changes
 
@@ -305,7 +305,7 @@ int main() {
 		glDrawElements(GL_TRIANGLES, moon.numFaces, GL_UNSIGNED_INT, (void*)0);
 
 		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);*/
 
 		//--- stop drawing here ---
 #pragma endregion
