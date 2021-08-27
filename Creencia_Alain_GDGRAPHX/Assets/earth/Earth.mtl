@@ -1,7 +1,8 @@
 # Blender MTL File: 'None'
-# Material Count: 3
+# Material Count: 1
 
-newmtl Sun_MATERIAL
+
+newmtl Moon_MATERIAL
 Ns 96.078443
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
@@ -10,7 +11,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd Sun.tga
+map_Kd Moon.tga
 
 newmtl Earth_MATERIAL
 Ns 96.078443
@@ -23,7 +24,7 @@ d 1.000000
 illum 1
 map_Kd Earth.tga
 
-newmtl Moon_MATERIAL
+newmtl Sun_MATERIAL
 Ns 96.078443
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
@@ -32,4 +33,5 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd Moon.tga
+map_Kd Sun.tga
+

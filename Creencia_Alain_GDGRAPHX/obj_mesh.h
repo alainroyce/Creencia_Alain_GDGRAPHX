@@ -6,6 +6,7 @@
 struct VertexData {
 	glm::vec3 position;
 	glm::vec2 uv;
+	glm::vec3 normal;
 };
 
 // data class for obj data
@@ -131,6 +132,7 @@ void LoadObjToMemory(ObjData* objData, GLfloat scaleFactor, GLfloat tOffset[]) {
 	std::vector<VertexData> vertexList;
 
 	/*for (int i = 0; i < objData->attrib.vertices.size() / 3; i++) {
+
 		VertexData vertexData;
 		vertexData.position = {
 			objData->attrib.vertices[i * 3] * scaleFactor + tOffset[0],// x
@@ -161,12 +163,35 @@ void LoadObjToMemory(ObjData* objData, GLfloat scaleFactor, GLfloat tOffset[]) {
 				};
 			}
 
+			if (idx.normal_index >= 0)
+			{
+				vertexData.normal = {
+					objData->attrib.normals[size_t(idx.normal_index) * 3 + 0],
+					objData->attrib.normals[size_t(idx.normal_index) * 3 + 1],
+					objData->attrib.normals[size_t(idx.normal_index) * 3 + 2]
+				};
+			}
+
 			vertexList.push_back(vertexData);
 			indices.push_back(indices.size());
 		}
 	}
 
 	objData->numFaces = indices.size();
+
+	//Generate normals if no normal data exist
+	if (objData->attrib.normals.size() == 0)
+	{
+		for (int i = 0; i < vertexList.size() / 3; i++)
+		{
+			int idx = i * 3;
+			glm::vec3 normal = glm::normalize(glm::cross(vertexList[idx + 1].position - vertexList[idx].position,
+				vertexList[idx + 2].position - vertexList[idx].position));
+			vertexList[idx].normal = normal;
+			vertexList[idx + 1].normal = normal;
+			vertexList[idx + 2].normal = normal;
+		}
+	}
 
 	// generate VAO
 	GLuint VAO;
@@ -203,6 +228,16 @@ void LoadObjToMemory(ObjData* objData, GLfloat scaleFactor, GLfloat tOffset[]) {
 		GL_FALSE,
 		sizeof(VertexData),
 		(void*)offsetof(VertexData, uv)
+	);
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(
+		2,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(VertexData),
+		(void*)offsetof(VertexData, normal)
 	);
 
 	GLuint EBO;

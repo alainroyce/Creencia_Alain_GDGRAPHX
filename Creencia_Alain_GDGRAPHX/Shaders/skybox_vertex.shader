@@ -6,7 +6,8 @@ out vec3 TexCoords;
 uniform mat4 u_projection;
 uniform mat4 u_view;
 
-void main() {
+void main()
+{
 	TexCoords = a_vertex;
 	gl_Position = u_projection * u_view * vec4(a_vertex, 1.0);
 }

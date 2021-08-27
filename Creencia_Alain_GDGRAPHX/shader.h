@@ -80,4 +80,3 @@ GLuint LoadShaders(std::string vertexShaderPath, std::string fragmentShaderPath)
 
 	return shaderProgram;
 }
-
