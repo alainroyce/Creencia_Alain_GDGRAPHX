@@ -49,7 +49,7 @@ int main() {
 
 	ObjData earth;
 	//backpack.textures = 
-	LoadObjFile(&earth, "building/barangay.obj");
+	LoadObjFile(&earth, "Road/Road.obj");
 	GLfloat earthOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
 		&earth,
@@ -193,12 +193,12 @@ int main() {
 
 		glm::mat4 view;
 		//camera position
-		glm::vec3 cameraPos = glm::vec3(0.0f, 5.0f, -20.0f); //changes
+		glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, 1.0f); //changes
 		// side look
 		view = glm::lookAt(
 			cameraPos,
 			//glm::vec3(0.5f, 0.0f, -1.0f),
-			glm::vec3(trans2[3][0], trans2[3][1], trans2[3][2]),
+			glm::vec3(trans1[3][0], trans1[3][1], trans1[3][2]),
 			glm::vec3(0.0f, 1.0f, 0.0f)
 		);
 		glUniform3f(cameraPosLoc, cameraPos.x, cameraPos.y, cameraPos.y); //changes
@@ -212,7 +212,7 @@ int main() {
 
 #pragma region Draw
 
-		DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
+		//DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
 
 		/*////////// SUN
 		glBindVertexArray(sun.vaoId);
@@ -251,17 +251,17 @@ int main() {
 		trans1 = glm::mat4(1.0f); // identity
 		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
 		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans1 = glm::translate(trans1, glm::vec3(-3.0f, 0.0f, -3.0f)); // matrix * translate_matrix
-		trans1 = glm::scale(trans1, glm::vec3(0.25f, 0.25f, 0.25f));
+		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, 0.0f)); // matrix * translate_matrix
+		trans1 = glm::scale(trans1, glm::vec3(1.0f, 1.0f, 1.0f));
 
 		//send to shader
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans2)); //changes
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1)); //changes
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		glActiveTexture(GL_TEXTURE0);
+		/*glActiveTexture(GL_TEXTURE0);
 		GLuint earthTexture = earth.textures[earth.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, earthTexture);
+		glBindTexture(GL_TEXTURE_2D, earthTexture);*/
 
 		// incerement rotation by deltaTime
 		currentTime = glfwGetTime();
