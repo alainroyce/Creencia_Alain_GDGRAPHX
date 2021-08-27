@@ -193,7 +193,7 @@ int main() {
 
 		glm::mat4 view;
 		//camera position
-		glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, 1.0f); //changes
+		glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, -5.0f); //changes
 		// side look
 		view = glm::lookAt(
 			cameraPos,
