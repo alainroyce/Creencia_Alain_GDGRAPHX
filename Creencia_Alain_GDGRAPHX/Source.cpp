@@ -49,7 +49,7 @@ int main() {
 
 	ObjData earth;
 	//backpack.textures = 
-	LoadObjFile(&earth, "earth/Earth.obj");
+	LoadObjFile(&earth, "building/barangay.obj");
 	GLfloat earthOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
 		&earth,
