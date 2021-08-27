@@ -14,7 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 //camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float yaw = -90.0f;
@@ -103,14 +103,14 @@ int main() {
 	ObjData earth;
 	//backpack.textures = 
 	LoadObjFile(&earth, "grass/10438_Circular_Grass_Patch_v1_iterations-2.obj");
-	GLfloat earthOffsets[] = { 0.0f, 0.0f, 0.0f };
+	GLfloat earthOffsets[] = { 0.0f, 0, 0 }; //x,z,y
 	LoadObjToMemory(
 		&earth,
 		1.0f,
 		earthOffsets
 	);
 
-	/*ObjData moon;
+	ObjData moon;
 	//backpack.textures = 
 	LoadObjFile(&moon, "earth/Earth.obj");
 	GLfloat moonOffsets[] = { 0.0f, 0.0f, 0.0f };
@@ -120,6 +120,7 @@ int main() {
 		moonOffsets
 	);
 
+	/*
 	ObjData sun;
 	//backpack.textures = 
 	LoadObjFile(&sun, "earth/Earth.obj");
@@ -147,7 +148,7 @@ int main() {
 	//LoadSkybox shader
 	GLuint skyboxShderProgram = LoadShaders("Shaders/skybox_vertex.shader", "Shaders/skybox_fragment.shader"); //changes
 
-	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_fragment.shader"); //changes
+	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_directional_fragment.shader"); //changes
 	glUseProgram(shaderProgram);
 
 	GLuint colorLoc = glGetUniformLocation(shaderProgram, "u_color");
@@ -181,7 +182,7 @@ int main() {
 	GLuint lightPoscLoc = glGetUniformLocation(shaderProgram, "u_light_pos"); //changes
 	//glUniform3f(lightPoscLoc, 0.0f, 1.0f, 0.0f);
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir"); //changes
-	glUniform3f(lightPoscLoc, trans1[3][0], trans1[3][1]+1.0f, trans1[3][1]); //changes
+	glUniform3f(lightPoscLoc, trans1[3][0], trans1[3][1] + 1.0f, trans1[3][1]); //changes //x,z,y
 	glUniform3f(lightDirLoc, 1.0f, 1.0f, 1.0f); //changes
 	//glUniform3f(lightDirLoc, 0.0f, 1.0f, 0.0f);
 
@@ -268,7 +269,7 @@ int main() {
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));*/
 		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		float cameraSpeed = deltaTime/100;
+		float cameraSpeed = deltaTime;
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 			cameraPos += cameraSpeed * cameraFront;
 		}
@@ -328,7 +329,7 @@ int main() {
 		//unbindtexture after rendering
 		glBindTexture(GL_TEXTURE_2D, 0);
 		*/
-
+		
 		//////////////EARTH
 		glBindVertexArray(earth.vaoId);
 		glUseProgram(shaderProgram); //changes
@@ -340,9 +341,9 @@ int main() {
 		trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, 0.0f)); // matrix * translate_matrix
+		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, -100.0f)); // matrix * translate_matrix
 		trans1 = glm::scale(trans1, glm::vec3(1.0f, 1.0f, 1.0f));
-
+		
 		//send to shader
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1)); //changes
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1)); //changes
@@ -362,19 +363,19 @@ int main() {
 
 		//unbindtexture after rendering
 		glBindTexture(GL_TEXTURE_2D, 0);
-
-		/*////////// MOON
+		
+		////////// MOON
 		glBindVertexArray(moon.vaoId);
 		glUseProgram(shaderProgram); //changes
 
 		// transforms
 		trans = glm::mat4(1.0f); // identity
 		//rotates it to the origin point of the Earth; revolves around the Earth
-		trans = glm::rotate(trans1, glm::radians(xFactor1), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans = glm::translate(trans, glm::vec3(3.6f, 0.0f, -3.0f)); // matrix * translate_matrix
+		//trans = glm::rotate(trans1, glm::radians(xFactor1), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
+		trans = glm::translate(trans, glm::vec3(0.0f, 0.0f, 0.0f)); // matrix * translate_matrix
 		trans = glm::scale(trans, glm::vec3(0.4f, 0.4f, 0.4f));
 		//send to shader
-		glm::mat4 normalTrans = glm::transpose(glm::inverse(trans2)); //changes
+		glm::mat4 normalTrans = glm::transpose(glm::inverse(trans)); //changes
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans)); //changes
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
@@ -394,7 +395,7 @@ int main() {
 		glDrawElements(GL_TRIANGLES, moon.numFaces, GL_UNSIGNED_INT, (void*)0);
 
 		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);*/
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		//--- stop drawing here ---
 #pragma endregion

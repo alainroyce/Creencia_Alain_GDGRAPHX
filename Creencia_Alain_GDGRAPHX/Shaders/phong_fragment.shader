@@ -48,7 +48,8 @@ void main()
 	float gradient = attenuate(distance, 30.0);
 
 	//FragColor = vec4(ambient + (diffuse + specular) * gradient, 1.0);
-	FragColor = vec4(u_color / 10 + (ambient + (diffuse * 3.0 + specular * 3.0) * gradient), 1.0) * texture(texture_diffuse, UV);
+	FragColor = vec4(u_color / 10 + (ambient + (diffuse * 30.0 + specular * 30.0) * gradient), 1.0) * texture(texture_diffuse, UV);
+	//FragColor = vec4(u_color / 10 + (ambient + (diffuse * 3.0 + specular * 3.0) * gradient), 1.0) * texture(texture_diffuse, UV);
 }
 
 /*
