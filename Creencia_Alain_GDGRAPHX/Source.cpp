@@ -260,7 +260,7 @@ int main() {
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
 		glActiveTexture(GL_TEXTURE0);
-		GLuint earthTexture = earth.textures[earth.materials[1].diffuse_texname];
+		GLuint earthTexture = earth.textures[earth.materials[0].diffuse_texname];
 		glBindTexture(GL_TEXTURE_2D, earthTexture);
 
 		// incerement rotation by deltaTime
