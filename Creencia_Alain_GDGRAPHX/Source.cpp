@@ -13,6 +13,59 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//camera
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+float yaw = -90.0f;
+float pitch = 0.0f;
+float fov = 45.0f;
+
+//mouse state
+bool firstMouse = true;
+float lastX = 1024 / 2.0;
+float lastY = 768 / 2.0;
+
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float mouseOffsetX = xpos - lastX;
+	float mouseOffsetY = lastY - ypos;
+
+	lastX = xpos;
+	lastY = ypos;
+
+	float sensitivity = 0.1f;
+	mouseOffsetX *= sensitivity;
+	mouseOffsetY *= sensitivity;
+
+	yaw += mouseOffsetX;
+	pitch += mouseOffsetY;
+
+	if (pitch > 89.0f)
+	{
+		pitch = 89.0f;
+	}
+	if (pitch < -89.0f)
+	{
+		pitch = -89.0f;
+	}
+
+
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(front);
+}
 int main() {
 	stbi_set_flip_vertically_on_load(true);
 #pragma region Initialization
@@ -49,7 +102,7 @@ int main() {
 
 	ObjData earth;
 	//backpack.textures = 
-	LoadObjFile(&earth, "Road/Road.obj");
+	LoadObjFile(&earth, "grass/10438_Circular_Grass_Patch_v1_iterations-2.obj");
 	GLfloat earthOffsets[] = { 0.0f, 0.0f, 0.0f };
 	LoadObjToMemory(
 		&earth,
@@ -147,6 +200,15 @@ int main() {
 	float prevTime = 0.0f;
 	float deltaTime = 0.0f;
 
+	//var for wasd movement 
+	float Zvalue;
+	float Xvalue;
+	float Yvalue;
+
+
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	//depth testing
 	glEnable(GL_DEPTH_TEST);
 	//glDepthFunc(GL_ALWAYS); // set the depth test function
@@ -180,7 +242,7 @@ int main() {
 
 		// Perspective Projection
 		//change to perspective view
-		projection = glm::perspective(glm::radians(90.0f), ratio, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(90.0f), ratio, 0.1f, 10000.0f);
 		// Set projection matrix in shader
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -191,9 +253,9 @@ int main() {
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
 
-		glm::mat4 view;
+		/*glm::mat4 view;
 		//camera position
-		glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, -5.0f); //changes
+		glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, -200.0f); //changes
 		// side look
 		view = glm::lookAt(
 			cameraPos,
@@ -202,6 +264,29 @@ int main() {
 			glm::vec3(0.0f, 1.0f, 0.0f)
 		);
 		glUniform3f(cameraPosLoc, cameraPos.x, cameraPos.y, cameraPos.y); //changes
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));*/
+		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+		float cameraSpeed = deltaTime/100;
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+			cameraPos += cameraSpeed * cameraFront;
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+			cameraPos -= cameraSpeed * cameraFront;
+		}
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+			cameraPos += cameraSpeed * cameraUp;
+		}
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+			cameraPos -= cameraSpeed * cameraUp;
+		}
+		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 #pragma endregion
 
@@ -212,7 +297,7 @@ int main() {
 
 #pragma region Draw
 
-		//DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
+		DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
 
 		/*////////// SUN
 		glBindVertexArray(sun.vaoId);
@@ -251,23 +336,25 @@ int main() {
 		trans1 = glm::mat4(1.0f); // identity
 		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
 		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
+		trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
 		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, 0.0f)); // matrix * translate_matrix
-		trans1 = glm::scale(trans1, glm::vec3(1.0f, 1.0f, 1.0f));
+		trans1 = glm::scale(trans1, glm::vec3(10.0f, 10.0f, 1.0f));
 
 		//send to shader
-		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans2)); //changes
+		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1)); //changes
 		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1)); //changes
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
-		/*glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0);
 		GLuint earthTexture = earth.textures[earth.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, earthTexture);*/
+		glBindTexture(GL_TEXTURE_2D, earthTexture);
 
 		// incerement rotation by deltaTime
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
 		xFactor2 += deltaTime * xSpeed2;
-		prevTime = currentTime;
 
 		//draw earth
 		glDrawElements(GL_TRIANGLES, earth.numFaces, GL_UNSIGNED_INT, (void*)0);
