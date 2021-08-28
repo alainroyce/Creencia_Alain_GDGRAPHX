@@ -475,7 +475,7 @@ int main() {
 		trans = glm::mat4(1.0f); // identity
 		//rotates it to the origin point of the Earth; revolves around the Earth
 		//trans = glm::rotate(trans1, glm::radians(xFactor1), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans = glm::translate(trans, glm::vec3(0.0f, 0.0f, 100.0f)); // matrix * translate_matrix
+		trans = glm::translate(trans, glm::vec3(0.0f, 30.0f, 0.0f)); // matrix * translate_matrix
 		trans = glm::scale(trans, glm::vec3(0.4f, 0.4f, 0.4f));
 		//send to shader
 		glm::mat4 normalTrans = glm::transpose(glm::inverse(trans)); //changes
@@ -551,7 +551,7 @@ int main() {
 		trans3 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans3 = glm::translate(trans3, glm::vec3(120.0f, 200.0f, -90.0f)); // matrix * translate_matrix
+		trans3 = glm::translate(trans3, glm::vec3(120.0f, 100.0f, -90.0f)); // matrix * translate_matrix
 		trans3 = glm::scale(trans3, glm::vec3(0.03f, 0.03f, 0.03f));
 
 		//send to shader
@@ -587,7 +587,7 @@ int main() {
 		trans4 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans4 = glm::translate(trans4, glm::vec3(90.0f, 200.0f, -55.0f)); // matrix * translate_matrix
+		trans4 = glm::translate(trans4, glm::vec3(90.0f, 100.0f, -55.0f)); // matrix * translate_matrix
 		trans4 = glm::scale(trans4, glm::vec3(0.01f / 1.05, 0.01f / 1.05, 0.01f / 1.05));
 
 		//send to shader
@@ -628,7 +628,7 @@ int main() {
 		trans5 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans5 = glm::translate(trans5, glm::vec3(45.0f, 175.0f, -89.0f)); // matrix * translate_matrix
+		trans5 = glm::translate(trans5, glm::vec3(-120.0f, 75.0f, -89.0f)); // matrix * translate_matrix
 		trans5 = glm::scale(trans5, glm::vec3(0.016f, 0.016f, 0.016f));
 
 		//send to shader
@@ -668,7 +668,7 @@ int main() {
 		//trans6 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans6 = glm::translate(trans6, glm::vec3(150.0f, -300.0f, -87.0f)); // matrix * translate_matrix
+		trans6 = glm::translate(trans6, glm::vec3(150.0f, -290.0f, -87.0f)); // matrix * translate_matrix
 		trans6 = glm::scale(trans6, glm::vec3(0.001f * 6, 0.001f * 6, 0.001f * 6));
 
 		//send to shader
