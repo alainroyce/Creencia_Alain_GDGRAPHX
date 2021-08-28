@@ -165,6 +165,15 @@ int main() {
 		1.0f,
 		structure4Offsets
 	);
+	ObjData road;
+	//backpack.textures = 
+	LoadObjFile(&road, "road/10562_RoadSectionCross_v2-L3.obj");
+	GLfloat roadOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&road,
+		1.0f,
+		roadOffsets
+	);
 
 	/*
 	ObjData sun;
@@ -389,7 +398,7 @@ int main() {
 		*/
 		
 		//////////////EARTH
-		glBindVertexArray(earth.vaoId);
+		glBindVertexArray(road.vaoId);
 		glUseProgram(shaderProgram); //changes
 
 		// transforms
@@ -399,8 +408,8 @@ int main() {
 		trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans1 = glm::translate(trans1, glm::vec3(40.0f, 200.0f, -101.0f)); // matrix * translate_matrix
-		trans1 = glm::scale(trans1, glm::vec3(1.0f, 1.0f, 1.0f));
+		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, -88.0f)); // matrix * translate_matrix
+		trans1 = glm::scale(trans1, glm::vec3(0.2f, 0.2f, 0.2f));
 		
 		//send to shader
 		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1)); //changes
@@ -408,8 +417,8 @@ int main() {
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 
 		glActiveTexture(GL_TEXTURE0);
-		GLuint earthTexture = earth.textures[earth.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, earthTexture);
+		GLuint roadTexture = road.textures[road.materials[0].diffuse_texname];
+		glBindTexture(GL_TEXTURE_2D, roadTexture);
 
 		// incerement rotation by deltaTime
 		currentTime = glfwGetTime();
@@ -417,7 +426,7 @@ int main() {
 		xFactor2 += deltaTime * xSpeed2;
 
 		//draw earth
-		glDrawElements(GL_TRIANGLES, earth.numFaces, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, road.numFaces, GL_UNSIGNED_INT, (void*)0);
 
 		//unbindtexture after rendering
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -435,8 +444,8 @@ int main() {
 		trans7 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans7 = glm::translate(trans7, glm::vec3(40.0f, 0.0f, -101.0f)); // matrix * translate_matrix
-		trans7 = glm::scale(trans7, glm::vec3(2.5f, 2.5f, 1.0f));
+		trans7 = glm::translate(trans7, glm::vec3(40.0f, 0.0f, -102.0f)); // matrix * translate_matrix
+		trans7 = glm::scale(trans7, glm::vec3(4.0f, 4.0f, 1.0f));
 
 		//send to shader
 		glm::mat4 normalTrans7 = glm::transpose(glm::inverse(trans7)); //changes
@@ -505,7 +514,7 @@ int main() {
 		trans2 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans2 = glm::translate(trans2, glm::vec3(0.0f, 0.0f, -90.0f)); // matrix * translate_matrix
+		trans2 = glm::translate(trans2, glm::vec3(-220.0f, -255.0f, -90.0f)); // matrix * translate_matrix
 		trans2 = glm::scale(trans2, glm::vec3(0.5f, 0.5f, 0.5f));
 
 		//send to shader
@@ -647,7 +656,7 @@ int main() {
 
 
 
-		//////////////Grocery
+		//////////////Stadium
 		glBindVertexArray(structure4.vaoId);
 		glUseProgram(shaderProgram); //changes
 
