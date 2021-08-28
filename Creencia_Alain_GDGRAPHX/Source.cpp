@@ -668,8 +668,8 @@ int main() {
 		//trans6 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		trans6 = glm::translate(trans6, glm::vec3(50.0f, -190.0f, -87.0f)); // matrix * translate_matrix
-		trans6 = glm::scale(trans6, glm::vec3(0.001f * 4, 0.001f * 4, 0.001f * 4));
+		trans6 = glm::translate(trans6, glm::vec3(150.0f, -300.0f, -87.0f)); // matrix * translate_matrix
+		trans6 = glm::scale(trans6, glm::vec3(0.001f * 6, 0.001f * 6, 0.001f * 6));
 
 		//send to shader
 		glm::mat4 normalTrans6 = glm::transpose(glm::inverse(trans6)); //changes
