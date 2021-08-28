@@ -102,7 +102,7 @@ int main() {
 
 	ObjData earth;
 	//backpack.textures = 
-	LoadObjFile(&earth, "grass/10438_Circular_Grass_Patch_v1_iterations-2.obj");
+	LoadObjFile(&earth, "grass2/10450_Rectangular_Grass_Patch_v1_iterations-2.obj");
 	GLfloat earthOffsets[] = { 0.0f, 0, 0 }; //x,z,y
 	LoadObjToMemory(
 		&earth,
@@ -397,7 +397,7 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		*/
 		
-		//////////////EARTH
+		//////////////ROAD
 		glBindVertexArray(road.vaoId);
 		glUseProgram(shaderProgram); //changes
 
@@ -433,7 +433,7 @@ int main() {
 
 
 
-		//////////////2
+		//////////////Grass 
 		glBindVertexArray(earth.vaoId);
 		glUseProgram(shaderProgram); //changes
 
@@ -445,7 +445,7 @@ int main() {
 		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		trans7 = glm::translate(trans7, glm::vec3(40.0f, 0.0f, -102.0f)); // matrix * translate_matrix
-		trans7 = glm::scale(trans7, glm::vec3(4.0f, 4.0f, 1.0f));
+		trans7 = glm::scale(trans7, glm::vec3(3.0f, 3.0f, 1.0f));
 
 		//send to shader
 		glm::mat4 normalTrans7 = glm::transpose(glm::inverse(trans7)); //changes
