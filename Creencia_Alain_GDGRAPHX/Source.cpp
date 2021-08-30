@@ -1,9 +1,9 @@
-//testtest
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-//#include "main.h"
+#include <vector>
+#include "Classes/cameraMovement.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include "glm/glm.hpp"
@@ -13,59 +13,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-//camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-float yaw = -90.0f;
-float pitch = 0.0f;
-float fov = 45.0f;
+//method declarations
+void drawObj(glm::mat4& trans, ObjData& structure, GLuint& shaderProgram, GLuint& normalTransformLoc, GLuint& modelTransformLoc,
+	float deg, std::vector<glm::vec3>& Vec3); //Vec3 = rotate axis, translation, scaling
 
-//mouse state
-bool firstMouse = true;
-float lastX = 1024 / 2.0;
-float lastY = 768 / 2.0;
-
-
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-
-	if (firstMouse)
-	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
-	}
-
-	float mouseOffsetX = xpos - lastX;
-	float mouseOffsetY = lastY - ypos;
-
-	lastX = xpos;
-	lastY = ypos;
-
-	float sensitivity = 0.1f;
-	mouseOffsetX *= sensitivity;
-	mouseOffsetY *= sensitivity;
-
-	yaw += mouseOffsetX;
-	pitch += mouseOffsetY;
-
-	if (pitch > 89.0f)
-	{
-		pitch = 89.0f;
-	}
-	if (pitch < -89.0f)
-	{
-		pitch = -89.0f;
-	}
-
-
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(front);
-}
 int main() {
 	stbi_set_flip_vertically_on_load(true);
 #pragma region Initialization
@@ -82,7 +33,7 @@ int main() {
 
 	// create window 
 	GLFWwindow* window;
-	window = glfwCreateWindow(1024, 768, "Celestial, Emerson", NULL, NULL);
+	window = glfwCreateWindow(1024, 768, "Machine Project: Creencia and Celestial", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to load window! \n");
 		return -1;
@@ -175,18 +126,6 @@ int main() {
 		roadOffsets
 	);
 
-	/*
-	ObjData sun;
-	//backpack.textures = 
-	LoadObjFile(&sun, "earth/Earth.obj");
-	GLfloat sunOffsets[] = { 0.0f, 0.0f, 0.0f };
-	LoadObjToMemory(
-		&sun,
-		1.0f,
-		sunOffsets
-	);*/
-
-	//Load skybox model; changes below
 	std::vector<std::string> faces{
 		"right.png",
 		"left.png",
@@ -203,12 +142,12 @@ int main() {
 	//LoadSkybox shader
 	GLuint skyboxShderProgram = LoadShaders("Shaders/skybox_vertex.shader", "Shaders/skybox_fragment.shader"); //changes
 
+	//used directional light for light source
 	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_directional_fragment.shader"); //changes
 	glUseProgram(shaderProgram);
 
 	GLuint colorLoc = glGetUniformLocation(shaderProgram, "u_color");
 	glUniform3f(colorLoc, 1.0f, 1.0f, 1.0f);
-
 
 	// initialize MVP
 	GLuint modelTransformLoc = glGetUniformLocation(shaderProgram, "u_model");
@@ -239,8 +178,6 @@ int main() {
 	glm::mat4 trans7 = glm::mat4(1.0f); // identity
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans7));
 
-
-
 	// define projection matrix
 	glm::mat4 projection = glm::mat4(1.0f);
 	//glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -251,7 +188,6 @@ int main() {
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir"); //changes
 	glUniform3f(lightPoscLoc, trans1[3][0], trans1[3][1] + 1.0f, trans1[3][1]); //changes //x,z,y
 	glUniform3f(lightDirLoc, 1.0f, 1.0f, 1.0f); //changes
-	//glUniform3f(lightDirLoc, 0.0f, 1.0f, 0.0f);
 
 #pragma endregion
 
@@ -273,9 +209,10 @@ int main() {
 	float Zvalue;
 	float Xvalue;
 	float Yvalue;
+	//cameraMovement initialization
+	cameraMovement::initialize();
 
-
-	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, cameraMovement::getInstance()->mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//depth testing
@@ -300,18 +237,8 @@ int main() {
 #pragma endregion
 
 #pragma region Projection
-		// Orthopgraphic projection but make units same as pixels. origin is lower left of window
-		// projection = glm::ortho(0.0f, (GLfloat)width, 0.0f, (GLfloat)height, 0.1f, 10.0f); // when using this scale objects really high at pixel unity size
-
-		// Orthographic with stretching
-		//projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 10.0f);
-
-		// Orthographic with corection for stretching, resize window to see difference with previous example
-		//projection = glm::ortho(-ratio, ratio, -1.0f, 1.0f, 0.1f, 10.0f);
-
 		// Perspective Projection
-		//change to perspective view
-		projection = glm::perspective(glm::radians(90.0f), ratio, 0.1f, 10000.0f);
+		projection = glm::perspective(glm::radians(90.0f), ratio, 0.1f, 1000.0f);
 		// Set projection matrix in shader
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
@@ -322,39 +249,13 @@ int main() {
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
 
-		/*glm::mat4 view;
-		//camera position
-		glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, -200.0f); //changes
-		// side look
-		view = glm::lookAt(
-			cameraPos,
-			//glm::vec3(0.5f, 0.0f, -1.0f),
-			glm::vec3(trans1[3][0], trans1[3][1], trans1[3][2]),
-			glm::vec3(0.0f, 1.0f, 0.0f)
-		);
-		glUniform3f(cameraPosLoc, cameraPos.x, cameraPos.y, cameraPos.y); //changes
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));*/
-		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		glm::mat4 view = glm::lookAt(cameraMovement::getInstance()->cameraPos,
+			cameraMovement::getInstance()->cameraPos + cameraMovement::getInstance()->cameraFront,
+			cameraMovement::getInstance()->cameraUp);
 
-		float cameraSpeed = deltaTime*100;
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-			cameraPos += cameraSpeed * cameraFront;
-		}
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-			cameraPos -= cameraSpeed * cameraFront;
-		}
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		}
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		}
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-			cameraPos += cameraSpeed * cameraUp;
-		}
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-			cameraPos -= cameraSpeed * cameraUp;
-		}
+		//w,a,s,d movement of the camera
+		cameraMovement::getInstance()->moveCam(window, deltaTime);
+
 		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 #pragma endregion
@@ -365,332 +266,72 @@ int main() {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 #pragma region Draw
-
-		DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
-
-		/*////////// SUN
-		glBindVertexArray(sun.vaoId);
-		glUseProgram(shaderProgram); //changes
-
-		// transforms
-		trans2 = glm::mat4(1.0f); // identity
-		//trans2 = glm::translate(trans2, glm::vec3(-0.8f, 0.0f, -3.0f)); // matrix * translate_matrix
-		trans2 = glm::scale(trans2, glm::vec3(0.7f, 0.7f, 0.7f));
-		//rotates itself; no revolution to other planets
-		trans2 = glm::rotate(trans2, glm::radians(xFactor3), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		//send to shader
-		glm::mat4 normalTrans2 = glm::transpose(glm::inverse(trans2)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans2)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
-
-		glActiveTexture(GL_TEXTURE0);
-		GLuint sunTexture = sun.textures[sun.materials[2].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, sunTexture);
-
-		// incerement rotation by deltaTime
-		xFactor3 += deltaTime * xSpeed3;
-
-		//draw sun
-		glDrawElements(GL_TRIANGLES, sun.numFaces, GL_UNSIGNED_INT, (void*)0);
-
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
-		*/
+		//------------ start drawing here
 		
-		//////////////ROAD
-		glBindVertexArray(road.vaoId);
-		glUseProgram(shaderProgram); //changes
-
-		// transforms
-		trans1 = glm::mat4(1.0f); // identity
-		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
-		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, -88.0f)); // matrix * translate_matrix
-		trans1 = glm::scale(trans1, glm::vec3(0.2f, 0.2f, 0.2f));
-		
-		//send to shader
-		glm::mat4 normalTrans1 = glm::transpose(glm::inverse(trans1)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans1)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
-
-		glActiveTexture(GL_TEXTURE0);
-		GLuint roadTexture = road.textures[road.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, roadTexture);
-
-		// incerement rotation by deltaTime
+		//deltaTime value
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
-		xFactor2 += deltaTime * xSpeed2;
-
-		//draw earth
-		glDrawElements(GL_TRIANGLES, road.numFaces, GL_UNSIGNED_INT, (void*)0);
-
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-
-
-		//////////////Grass 
-		glBindVertexArray(earth.vaoId);
-		glUseProgram(shaderProgram); //changes
-
-		// transforms
-		trans7 = glm::mat4(1.0f); // identity
-		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
-		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans7 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		trans7 = glm::translate(trans7, glm::vec3(40.0f, 0.0f, -102.0f)); // matrix * translate_matrix
-		trans7 = glm::scale(trans7, glm::vec3(3.0f, 3.0f, 1.0f));
-
-		//send to shader
-		glm::mat4 normalTrans7 = glm::transpose(glm::inverse(trans7)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans7)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans7));
-
-		glActiveTexture(GL_TEXTURE0);
-		GLuint earth2Texture = earth.textures[earth.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, earth2Texture);
-
-		// incerement rotation by deltaTime
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - prevTime;
-		xFactor2 += deltaTime * xSpeed2;
-
-		//draw earth
-		glDrawElements(GL_TRIANGLES, earth.numFaces, GL_UNSIGNED_INT, (void*)0);
-
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
-		
-		////////// MOON
-		glBindVertexArray(moon.vaoId);
-		glUseProgram(shaderProgram); //changes
-
-		// transforms
-		trans = glm::mat4(1.0f); // identity
-		//rotates it to the origin point of the Earth; revolves around the Earth
-		//trans = glm::rotate(trans1, glm::radians(xFactor1), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans = glm::translate(trans, glm::vec3(0.0f, 30.0f, 0.0f)); // matrix * translate_matrix
-		trans = glm::scale(trans, glm::vec3(0.4f, 0.4f, 0.4f));
-		//send to shader
-		glm::mat4 normalTrans = glm::transpose(glm::inverse(trans)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-		glActiveTexture(GL_TEXTURE0);
-		GLuint moonTexture = moon.textures[moon.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, moonTexture);
-
-		//directional light will also rotate
-		//std::cout << xFactor1 << std::endl;
-		//glUniform3f(lightPoscLoc, glm::radians(xFactor1 * 1.0), 0.0f, 0.0f); //changes
-
-		// incerement rotation by deltaTime
-		xFactor1 += deltaTime * xSpeed1;
 		prevTime = currentTime;
 
-		//draw moon
-		glDrawElements(GL_TRIANGLES, moon.numFaces, GL_UNSIGNED_INT, (void*)0);
+		//Skybox display
+		DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
 
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
+		//Road
+		std::vector <glm::vec3> vec1 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(0.0f, 0.0f, 0.0f), //translate values
+			glm::vec3(0.2f, 0.2f, 0.2f) }; //scaling values
+		drawObj(trans1, road, shaderProgram, normalTransformLoc, modelTransformLoc,
+			270.0f, vec1);
 
+		//Grass
+		std::vector <glm::vec3> vec2 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(40.0f, 0.0f, -15.0f), //translate values
+			glm::vec3(3.0f, 3.0f, 1.0f) }; //scaling values
+		drawObj(trans7, earth, shaderProgram, normalTransformLoc, modelTransformLoc,
+			270.0f, vec2);
 
+		//MOON
+		std::vector <glm::vec3> vec3 = { glm::vec3(0.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(0.0f, 30.0f, 0.0f), //translate values
+			glm::vec3(0.5f, 0.5f, 0.5f) }; //scaling values
+		drawObj(trans, moon, shaderProgram, normalTransformLoc, modelTransformLoc,
+			0.0f, vec3);
 
+		//Powerplant
+		std::vector <glm::vec3> vec4 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(-225.0f, -255.0f, -2.0f), //translate values
+			glm::vec3(0.5f, 0.5f, 0.5f) }; //scaling values
+		drawObj(trans2, barn, shaderProgram, normalTransformLoc, modelTransformLoc,
+			270.0f, vec4);
 
-		//////////////Powerplant
-		glBindVertexArray(barn.vaoId);
-		glUseProgram(shaderProgram); //changes
+		//Church
+		std::vector <glm::vec3> vec5 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(120.0f, 100.0f, -5.0f), //translate values
+			glm::vec3(0.03f, 0.03f, 0.03f) }; //scaling values
+		drawObj(trans3, structure, shaderProgram, normalTransformLoc, modelTransformLoc,
+			270.0f, vec5);
 
-		// transforms
-		trans2 = glm::mat4(1.0f); // identity
-		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
-		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans2 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//BUILDING
+		std::vector <glm::vec3> vec6 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(90.0f, 100.0f, 34.0f), //translate values
+			glm::vec3(0.01f / 1.05, 0.01f / 1.05, 0.01f / 1.05) }; //scaling values
+		drawObj(trans4, structure2, shaderProgram, normalTransformLoc, modelTransformLoc,
+			270.0f, vec6);
 
-		trans2 = glm::translate(trans2, glm::vec3(-220.0f, -255.0f, -90.0f)); // matrix * translate_matrix
-		trans2 = glm::scale(trans2, glm::vec3(0.5f, 0.5f, 0.5f));
+		//Grocery
+		std::vector <glm::vec3> vec7 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(-120.0f, 85.0f, -5.0f), //translate values
+			glm::vec3(0.016f, 0.016f, 0.016f) }; //scaling values
+		drawObj(trans5, structure3, shaderProgram, normalTransformLoc, modelTransformLoc,
+			270.0f, vec7);
 
-		//send to shader
-		glm::mat4 normalTrans2 = glm::transpose(glm::inverse(trans2)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans2)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
+		//Stadium
+		std::vector <glm::vec3> vec8 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(150.0f, -290.0f, 0.0f), //translate values
+			glm::vec3(0.001f * 6, 0.001f * 6, 0.001f * 6) }; //scaling values
+		drawObj(trans6, structure4, shaderProgram, normalTransformLoc, modelTransformLoc,
+			270.0f, vec8);
 
-		glActiveTexture(GL_TEXTURE0);
-		GLuint barnTexture =barn.textures[barn.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, barnTexture);
-
-
-		// incerement rotation by deltaTime
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - prevTime;
-		xFactor2 += deltaTime * xSpeed2;
-
-		//draw earth
-		glDrawElements(GL_TRIANGLES, barn.numFaces, GL_UNSIGNED_INT, (void*)0);
-
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-
-
-		//////////////Church
-		glBindVertexArray(structure.vaoId);
-		glUseProgram(shaderProgram); //changes
-
-		// transforms
-		trans3 = glm::mat4(1.0f); // identity
-		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
-		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans3 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		trans3 = glm::translate(trans3, glm::vec3(120.0f, 100.0f, -90.0f)); // matrix * translate_matrix
-		trans3 = glm::scale(trans3, glm::vec3(0.03f, 0.03f, 0.03f));
-
-		//send to shader
-		glm::mat4 normalTrans3 = glm::transpose(glm::inverse(trans3)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans3)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans3));
-
-		glActiveTexture(GL_TEXTURE0);
-		GLuint structureTexture = structure.textures[structure.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, structureTexture);
-
-
-		// incerement rotation by deltaTime
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - prevTime;
-		xFactor2 += deltaTime * xSpeed2;
-
-		//draw earth
-		glDrawElements(GL_TRIANGLES, structure.numFaces, GL_UNSIGNED_INT, (void*)0);
-
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-
-		//////////////BUILDING
-		glBindVertexArray(structure2.vaoId);
-		glUseProgram(shaderProgram); //changes
-
-		// transforms
-		trans4 = glm::mat4(1.0f); // identity
-		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
-		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans4 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		trans4 = glm::translate(trans4, glm::vec3(90.0f, 100.0f, -55.0f)); // matrix * translate_matrix
-		trans4 = glm::scale(trans4, glm::vec3(0.01f / 1.05, 0.01f / 1.05, 0.01f / 1.05));
-
-		//send to shader
-		glm::mat4 normalTrans4 = glm::transpose(glm::inverse(trans4)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans4)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans4));
-
-		glActiveTexture(GL_TEXTURE0);
-		GLuint structure2Texture = structure2.textures[structure2.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, structure2Texture);
-
-
-		// incerement rotation by deltaTime
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - prevTime;
-		xFactor2 += deltaTime * xSpeed2;
-
-		//draw earth
-		glDrawElements(GL_TRIANGLES, structure2.numFaces, GL_UNSIGNED_INT, (void*)0);
-
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-
-
-
-
-
-
-		//////////////Grocery
-		glBindVertexArray(structure3.vaoId);
-		glUseProgram(shaderProgram); //changes
-
-		// transforms
-		trans5 = glm::mat4(1.0f); // identity
-		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
-		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans5 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		trans5 = glm::translate(trans5, glm::vec3(-120.0f, 75.0f, -89.0f)); // matrix * translate_matrix
-		trans5 = glm::scale(trans5, glm::vec3(0.016f, 0.016f, 0.016f));
-
-		//send to shader
-		glm::mat4 normalTrans5 = glm::transpose(glm::inverse(trans5)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans5)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans5));
-
-		glActiveTexture(GL_TEXTURE0);
-		GLuint structure3Texture = structure3.textures[structure3.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, structure3Texture);
-
-
-		// incerement rotation by deltaTime
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - prevTime;
-		xFactor2 += deltaTime * xSpeed2;
-
-		//draw earth
-		glDrawElements(GL_TRIANGLES, structure3.numFaces, GL_UNSIGNED_INT, (void*)0);
-
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-
-
-
-
-		//////////////Stadium
-		glBindVertexArray(structure4.vaoId);
-		glUseProgram(shaderProgram); //changes
-
-		// transforms
-		trans6 = glm::mat4(1.0f); // identity
-		//rotates it to the origin point in the world where the sun is also positioned; revolves around the Sun
-		//trans1 = glm::rotate(trans1, glm::radians(xFactor2), glm::vec3(0.0f, 1.0f, 0.0f)); // matrix * rotation_matrix
-		trans6 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		//trans6 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		//trans1 = glm::rotate(trans, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		trans6 = glm::translate(trans6, glm::vec3(150.0f, -290.0f, -87.0f)); // matrix * translate_matrix
-		trans6 = glm::scale(trans6, glm::vec3(0.001f * 6, 0.001f * 6, 0.001f * 6));
-
-		//send to shader
-		glm::mat4 normalTrans6 = glm::transpose(glm::inverse(trans6)); //changes
-		glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans6)); //changes
-		glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
-
-		glActiveTexture(GL_TEXTURE0);
-		GLuint structure4Texture = structure4.textures[structure4.materials[0].diffuse_texname];
-		glBindTexture(GL_TEXTURE_2D, structure4Texture);
-
-
-		// incerement rotation by deltaTime
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - prevTime;
-		xFactor2 += deltaTime * xSpeed2;
-
-		//draw earth
-		glDrawElements(GL_TRIANGLES, structure4.numFaces, GL_UNSIGNED_INT, (void*)0);
-
-		//unbindtexture after rendering
-		glBindTexture(GL_TEXTURE_2D, 0);
 		//--- stop drawing here ---
 #pragma endregion
 
@@ -699,4 +340,35 @@ int main() {
 		glfwPollEvents();
 	}
 	return 0;
+}
+/*
+glm::mat4 trans6 = glm::mat4(1.0f); // identity
+glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
+*/
+void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint& normalTransformLoc, GLuint& modelTransformLoc,
+	float deg, std::vector<glm::vec3>& Vec3) //Vec3 = rotate axis, translation, scaling
+{
+	glBindVertexArray(structure.vaoId);
+	glUseProgram(shaderProgram); //changes
+
+	// transforms
+	trans = glm::mat4(1.0f); // identity
+	trans = glm::rotate(trans, glm::radians(deg), Vec3[0]);
+	trans = glm::translate(trans, Vec3[1]); // matrix * translate_matrix
+	trans = glm::scale(trans, Vec3[2]);
+
+	//send to shader
+	glm::mat4 normalTrans = glm::transpose(glm::inverse(trans)); //changes
+	glUniformMatrix4fv(normalTransformLoc, 1, GL_FALSE, glm::value_ptr(normalTrans)); //changes
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+	glActiveTexture(GL_TEXTURE0);
+	GLuint structureTexture = structure.textures[structure.materials[0].diffuse_texname];
+	glBindTexture(GL_TEXTURE_2D, structureTexture);
+
+	//draw earth
+	glDrawElements(GL_TRIANGLES, structure.numFaces, GL_UNSIGNED_INT, (void*)0);
+
+	//unbindtexture after rendering
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

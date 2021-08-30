@@ -171,9 +171,12 @@
     <None Include="Shaders\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Classes\cameraMovement.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Classes\cameraMovement.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="obj_mesh.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="skybox.h" />
