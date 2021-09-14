@@ -186,6 +186,12 @@ int main() {
 	GLuint lightPoscLoc = glGetUniformLocation(shaderProgram, "u_light_pos"); //changes
 	//glUniform3f(lightPoscLoc, 0.0f, 1.0f, 0.0f);
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir"); //changes
+	GLuint diffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_diffuse"); //changes1
+	GLuint normalTexLoc = glGetUniformLocation(shaderProgram, "texture_normal"); //changes1
+
+	glUniform1i(diffuseTexLoc, 0);//changes1
+	glUniform1i(normalTexLoc, 1);//changes1
+
 	glUniform3f(lightPoscLoc, trans1[3][0], trans1[3][1] + 1.0f, trans1[3][1]); //changes //x,z,y
 	glUniform3f(lightDirLoc, 1.0f, 1.0f, 1.0f); //changes
 
