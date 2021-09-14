@@ -142,26 +142,10 @@ int main() {
 		"front.png",
 		"back.png"
 	};
-	std::vector<std::string> faces1{
-		"right.png",
-		"left.png",
-		"bottom.png",
-		"top.png",
-		"front.png",
-		"back.png"
-	};
-	std::vector<std::string> faces2{
-		"right.png",
-		"left.png",
-		"bottom.png",
-		"top.png",
-		"front.png",
-		"back.png"
-	};
 
 	SkyBoxData skybox = LoadSkybox("Assets/skybox", faces); //changes
-	SkyBoxData skybox1 = LoadSkybox("Assets/skyboxday", faces1); //changes
-	SkyBoxData skybox2 = LoadSkybox("Assets/skyboxnight", faces2); //changes
+	SkyBoxData skybox1 = LoadSkybox("Assets/skybox", faces); //changes
+	SkyBoxData skybox2 = LoadSkybox("Assets/skybox", faces); //changes
 #pragma endregion
 
 #pragma region Shader Loading
