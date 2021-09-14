@@ -162,6 +162,7 @@
     <None Include="Debug\vc142.idb" />
     <None Include="Debug\vc142.pdb" />
     <None Include="packages.config" />
+    <None Include="Shaders\earth_night_fragment.shader" />
     <None Include="Shaders\fragment.shader" />
     <None Include="Shaders\phong_directional_fragment.shader" />
     <None Include="Shaders\phong_fragment.shader" />

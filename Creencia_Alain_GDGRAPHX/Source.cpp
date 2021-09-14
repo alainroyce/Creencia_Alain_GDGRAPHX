@@ -134,7 +134,10 @@ int main() {
 		"front.png",
 		"back.png"
 	};
+
 	SkyBoxData skybox = LoadSkybox("Assets/skybox", faces); //changes
+	SkyBoxData skybox1 = LoadSkybox("Assets/skybox", faces); //changes
+	SkyBoxData skybox2 = LoadSkybox("Assets/skybox", faces); //changes
 #pragma endregion
 
 #pragma region Shader Loading
@@ -144,6 +147,8 @@ int main() {
 
 	//used directional light for light source
 	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_directional_fragment.shader"); //changes
+	//GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/alpha_test_fragment.shader"); //changesMC
+	//GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/earth_night_fragment.shader"); //changesMC; normal fragment
 	glUseProgram(shaderProgram);
 
 	GLuint colorLoc = glGetUniformLocation(shaderProgram, "u_color");
@@ -186,8 +191,12 @@ int main() {
 	GLuint lightPoscLoc = glGetUniformLocation(shaderProgram, "u_light_pos"); //changes
 	//glUniform3f(lightPoscLoc, 0.0f, 1.0f, 0.0f);
 	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir"); //changes
+	//GLuint nightTexLoc = glGetUniformLocation(shaderProgram, "night_diffuse"); //changesMC; for secondary map
 	GLuint diffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_diffuse"); //changes1
 	GLuint normalTexLoc = glGetUniformLocation(shaderProgram, "texture_normal"); //changes1
+	//set textures; mapping the texture unit; only used for "earth_night_fragment.shader"
+	glUniform1i(diffuseTexLoc, 0); //changesMC; used for setting the first png in the shader
+	//glUniform1i(nightTexLoc, 1); //changesMC; used for accessing the secondary png in the shader
 
 	glUniform1i(diffuseTexLoc, 0);//changes1
 	glUniform1i(normalTexLoc, 1);//changes1
@@ -230,6 +239,9 @@ int main() {
 	//glCullFace(GL_BACK); // set which face to cull
 	//glFrontFace(GL_CCW); // set the front face orientation
 
+	float currentX = 0.0f; //changesMC
+	float currentY = 0.0f; //changesMC
+
 	while (!glfwWindowShouldClose(window)) {
 
 #pragma region Viewport
@@ -254,6 +266,12 @@ int main() {
 		// incerement rotation by deltaTime
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
+
+		currentX += (deltaTime * 0.50f); //changesMC
+		currentY += (deltaTime * 0.50f); //changesMC
+
+		glUniform3f(lightDirLoc, glm::sin(currentX), glm::cos(currentY), 0); //changesMC
+		std::cout << currentX << std::endl; //changesMC
 
 		glm::mat4 view = glm::lookAt(cameraMovement::getInstance()->cameraPos,
 			cameraMovement::getInstance()->cameraPos + cameraMovement::getInstance()->cameraFront,
@@ -281,6 +299,13 @@ int main() {
 
 		//Skybox display
 		DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
+
+		/*//changes3
+		if(time_ticks)
+		{
+			DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
+		}
+		*/
 
 		//Road
 		std::vector <glm::vec3> vec1 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
@@ -372,8 +397,33 @@ void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint
 	GLuint structureTexture = structure.textures[structure.materials[0].diffuse_texname];
 	glBindTexture(GL_TEXTURE_2D, structureTexture);
 
+	/*
+	* //this is for multitexturing //changesMC
+		glActiveTexture(GL_TEXTURE0);
+		GLuint earthTexture = earth.textures[earth.materials[0].diffuse_texname]; //morning light //changesMC
+		//GLuint earthTexture = earth.textures[earth.materials[1].diffuse_texname]; //nightLight //changesMC
+		glBindTexture(GL_TEXTURE_2D, earthTexture);
+
+		
+		//this is for the secondary map
+		glActiveTexture(GL_TEXTURE1);//changesMC
+		GLuint nightTexture = earth.textures[earth.materials[1].diffuse_texname]; //nightLight //changesMC
+		glBindTexture(GL_TEXTURE_2D, nightTexture);//changesMC
+		
+	*/
+
 	//draw earth
 	glDrawElements(GL_TRIANGLES, structure.numFaces, GL_UNSIGNED_INT, (void*)0);
+
+	/* //Use for blending
+	glEnable(GL_BLEND); //changesMC
+	//glDisable(GL_DEPTH_TEST);//changesMC //objects behind can be seen
+	glBlendFunc(GL_SRC0_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //changesMC
+	//draw moon
+	glDrawElements(GL_TRIANGLES, moon.numFaces, GL_UNSIGNED_INT, (void*)0);
+	//glEnable(GL_DEPTH_TEST);//changesMC
+	glDisable(GL_BLEND); //changesMC
+	*/
 
 	//unbindtexture after rendering
 	glBindTexture(GL_TEXTURE_2D, 0);

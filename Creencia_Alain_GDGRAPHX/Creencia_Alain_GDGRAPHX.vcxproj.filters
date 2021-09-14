@@ -52,6 +52,7 @@
     <None Include="Shaders\fragment.shader" />
     <None Include="Shaders\vertex.shader" />
     <None Include="Shaders\phong_normal_fragment.shader" />
+    <None Include="Shaders\earth_night_fragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
