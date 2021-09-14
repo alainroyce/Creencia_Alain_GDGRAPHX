@@ -21,18 +21,27 @@ void main()
 	float distance = length(u_light_pos - FragPos);
 
 
-	vec3 reflectDir = reflect(-lightVector, Normal);
+	vec3 lightColor = vec3(1.0, 1.0, 1.0); //color red
+	vec3 tbnNormal = texture(texture_normal, UV).rgb;
+
+	///convert pixel to vector
+	tbnNormal = tbnNormal * 2.0 - 1.0;
+	tbnNormal =  normalize(TBN * tbnNormal);
+
+
+	vec3 reflectDir = reflect(-lightVector, tbnNormal);
 
 	vec3 viewDir = normalize(u_camera_pos - FragPos);
 	float spec = pow(max(dot(reflectDir, viewDir), 0.1), 4);
 
-	vec3 lightColor = vec3(1.0, 1.0, 1.0); //color red
-
-	float specularStrength = 0.3;
+	float specularStrength = 2.0;
 	vec3 specular = specularStrength * spec * lightColor;
 
-	vec3 diffuse = vec3(max(dot(Normal, lightVector), 0.0)) * lightColor;
+	vec3 diffuse = vec3(max(dot(tbnNormal, lightVector), 0.0)) * lightColor;
 	vec3 ambient = u_ambient_color * lightColor;
 
-	FragColor = texture(texture_normal, UV);
+	//FragColor = vec4(tbnNormal);// for debug purposes turns the object red and blue
+	//texture(texture_normal, UV);
+	FragColor = vec4(ambient + (diffuse +  specular), 1.0 * texture(texture_diffuse, UV);// applies the normal mapping
+
 }
