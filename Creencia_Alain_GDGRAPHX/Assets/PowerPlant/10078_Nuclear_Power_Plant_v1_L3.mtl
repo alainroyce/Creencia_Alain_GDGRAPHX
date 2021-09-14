@@ -14,3 +14,4 @@ newmtl 10078_Nuclear_Power_Plant
 	Ke 0.0000 0.0000 0.0000
 	map_Ka 10078_Nuclear_Power_Plant_v1_Diffuse.jpg
 	map_Kd 10078_Nuclear_Power_Plant_v1_Diffuse.jpg
+	map_bump normal_map.jpg
