@@ -15,7 +15,7 @@
 
 //method declarations
 void drawObj(glm::mat4& trans, ObjData& structure, GLuint& shaderProgram, GLuint& normalTransformLoc, GLuint& modelTransformLoc,
-	float deg, std::vector<glm::vec3>& Vec3); //Vec3 = rotate axis, translation, scaling
+	float deg, float deg2, std::vector<glm::vec3>& Vec3); //Vec3 = rotate axis, translation, scaling; deg2 for y rotation
 
 int main() {
 	stbi_set_flip_vertically_on_load(true);
@@ -125,6 +125,14 @@ int main() {
 		1.0f,
 		roadOffsets
 	);
+	ObjData trees;
+	LoadObjFile(&trees, "Trees/trees9.obj");
+	GLfloat treesOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&trees,
+		1.0f,
+		treesOffsets
+	);
 
 	std::vector<std::string> faces{
 		"right.png",
@@ -149,20 +157,21 @@ int main() {
 	GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/phong_directional_fragment.shader"); //changes
 	//GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/alpha_test_fragment.shader"); //changesMC
 	//GLuint shaderProgram = LoadShaders("Shaders/phong_vertex.shader", "Shaders/earth_night_fragment.shader"); //changesMC; normal fragment
-	glUseProgram(shaderProgram);
+	glUseProgram(shaderProgram); //relevance
 
-	GLuint colorLoc = glGetUniformLocation(shaderProgram, "u_color");
-	glUniform3f(colorLoc, 1.0f, 1.0f, 1.0f);
+	GLuint colorLoc = glGetUniformLocation(shaderProgram, "u_color"); //relevance
+	glUniform3f(colorLoc, 1.0f, 1.0f, 1.0f); //relevance
 
 	// initialize MVP
-	GLuint modelTransformLoc = glGetUniformLocation(shaderProgram, "u_model");
-	GLuint viewLoc = glGetUniformLocation(shaderProgram, "u_view");
-	GLuint projectionLoc = glGetUniformLocation(shaderProgram, "u_projection");
+	GLuint modelTransformLoc = glGetUniformLocation(shaderProgram, "u_model"); //relevance
+	GLuint viewLoc = glGetUniformLocation(shaderProgram, "u_view"); //relevance
+	GLuint projectionLoc = glGetUniformLocation(shaderProgram, "u_projection"); //relevance
 
 	//initialize normal transformation; changes
-	GLuint normalTransformLoc = glGetUniformLocation(shaderProgram, "u_normal"); //changes
-	GLuint cameraPosLoc = glGetUniformLocation(shaderProgram, "u_camera_pos"); //changes
-	GLuint ambientColorLoc = glGetUniformLocation(shaderProgram, "u_ambient_color"); //changes
+	GLuint normalTransformLoc = glGetUniformLocation(shaderProgram, "u_normal"); //changes //relevance
+	GLuint model_id = glGetUniformLocation(shaderProgram, "model_id"); //newChange //relevance
+	GLuint cameraPosLoc = glGetUniformLocation(shaderProgram, "u_camera_pos"); //changes //relevance
+	GLuint ambientColorLoc = glGetUniformLocation(shaderProgram, "u_ambient_color"); //changes //relevance
 	glUniform3f(ambientColorLoc, 0.1f, 0.1f, 0.1f); //changes
 
 	//3 transformation for the 3 models
@@ -182,24 +191,30 @@ int main() {
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
 	glm::mat4 trans7 = glm::mat4(1.0f); // identity
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans7));
+	glm::mat4 trans8 = glm::mat4(1.0f); // identity
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans8)); //trees
 
 	// define projection matrix
 	glm::mat4 projection = glm::mat4(1.0f);
 	//glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	//setup light shading; position of the flash light; changes
-	GLuint lightPoscLoc = glGetUniformLocation(shaderProgram, "u_light_pos"); //changes
+	GLuint lightPoscLoc = glGetUniformLocation(shaderProgram, "u_light_pos"); //changes //relevance
 	//glUniform3f(lightPoscLoc, 0.0f, 1.0f, 0.0f);
-	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir"); //changes
-	//GLuint nightTexLoc = glGetUniformLocation(shaderProgram, "night_diffuse"); //changesMC; for secondary map
-	GLuint diffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_diffuse"); //changes1
-	GLuint normalTexLoc = glGetUniformLocation(shaderProgram, "texture_normal"); //changes1
+	GLuint lightDirLoc = glGetUniformLocation(shaderProgram, "u_light_dir"); //changes //relevance 
+	GLuint secondaryTexLoc = glGetUniformLocation(shaderProgram, "secondary_diffuse"); //changesMC; for secondary map //relevance
+	GLuint diffuseTexLoc = glGetUniformLocation(shaderProgram, "texture_diffuse"); //changes1 //relevance
+	GLuint normalTexLoc = glGetUniformLocation(shaderProgram, "texture_normal"); //changes1 //relevance
+
+
 	//set textures; mapping the texture unit; only used for "earth_night_fragment.shader"
 	glUniform1i(diffuseTexLoc, 0); //changesMC; used for setting the first png in the shader
-	//glUniform1i(nightTexLoc, 1); //changesMC; used for accessing the secondary png in the shader
+	glUniform1i(secondaryTexLoc, 1); //changesMC; used for accessing the secondary png in the shader
 
+	/* //for normal map
 	glUniform1i(diffuseTexLoc, 0);//changes1
 	glUniform1i(normalTexLoc, 1);//changes1
+	*/
 
 	glUniform3f(lightPoscLoc, trans1[3][0], trans1[3][1] + 1.0f, trans1[3][1]); //changes //x,z,y
 	glUniform3f(lightDirLoc, 1.0f, 1.0f, 1.0f); //changes
@@ -243,7 +258,7 @@ int main() {
 	float currentY = 0.0f; //changesMC
 
 	while (!glfwWindowShouldClose(window)) {
-
+		
 #pragma region Viewport
 		float ratio;
 		int width, height;
@@ -297,6 +312,9 @@ int main() {
 		deltaTime = currentTime - prevTime;
 		prevTime = currentTime;
 
+		//set to direct light
+		glUniform1i(model_id, 1);
+
 		//Skybox display
 		DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
 
@@ -312,56 +330,68 @@ int main() {
 			glm::vec3(0.0f, 0.0f, 0.0f), //translate values
 			glm::vec3(0.2f, 0.2f, 0.2f) }; //scaling values
 		drawObj(trans1, road, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, vec1);
+			270.0f, 0, vec1);
 
+		//set to multitext shader
+		glUniform1i(model_id, 2);
+		//Trees
+		std::vector <glm::vec3> vec9 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(250.0, -5.0f, 0.0f), //translate values
+			glm::vec3(2.0f, 2.0f, 2.0f), //scaling values
+			glm::vec3(0.0f, 1.0f, 0.0f)}; //rotation for y axis
+		drawObj(trans8, trees, shaderProgram, normalTransformLoc, modelTransformLoc, //relevance
+			0.0f, 90.0f, vec9);
+
+		//bring back to direct light
+		glUniform1i(model_id, 1);
 		//Grass
 		std::vector <glm::vec3> vec2 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(40.0f, 0.0f, -15.0f), //translate values
 			glm::vec3(3.0f, 3.0f, 1.0f) }; //scaling values
 		drawObj(trans7, earth, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, vec2);
+			270.0f, 0.0f, vec2);
 
 		//MOON
 		std::vector <glm::vec3> vec3 = { glm::vec3(0.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(0.0f, 30.0f, 0.0f), //translate values
 			glm::vec3(0.5f, 0.5f, 0.5f) }; //scaling values
 		drawObj(trans, moon, shaderProgram, normalTransformLoc, modelTransformLoc,
-			0.0f, vec3);
+			0.0f, 0.0f, vec3);
 
 		//Powerplant
 		std::vector <glm::vec3> vec4 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(-225.0f, -255.0f, -2.0f), //translate values
 			glm::vec3(0.5f, 0.5f, 0.5f) }; //scaling values
 		drawObj(trans2, barn, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, vec4);
+			270.0f, 0.0f, vec4);
 
 		//Church
 		std::vector <glm::vec3> vec5 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(120.0f, 100.0f, -5.0f), //translate values
 			glm::vec3(0.03f, 0.03f, 0.03f) }; //scaling values
 		drawObj(trans3, structure, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, vec5);
+			270.0f, 0.0f, vec5);
 
 		//BUILDING
 		std::vector <glm::vec3> vec6 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(90.0f, 100.0f, 34.0f), //translate values
 			glm::vec3(0.01f / 1.05, 0.01f / 1.05, 0.01f / 1.05) }; //scaling values
 		drawObj(trans4, structure2, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, vec6);
+			270.0f, 0.0f, vec6);
 
 		//Grocery
 		std::vector <glm::vec3> vec7 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(-120.0f, 85.0f, -5.0f), //translate values
 			glm::vec3(0.016f, 0.016f, 0.016f) }; //scaling values
 		drawObj(trans5, structure3, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, vec7);
+			270.0f, 0.0f, vec7);
 
 		//Stadium
 		std::vector <glm::vec3> vec8 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(150.0f, -290.0f, 0.0f), //translate values
 			glm::vec3(0.001f * 6, 0.001f * 6, 0.001f * 6) }; //scaling values
 		drawObj(trans6, structure4, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, vec8);
+			270.0f, 0.0f, vec8);
 
 		//--- stop drawing here ---
 #pragma endregion
@@ -377,7 +407,7 @@ glm::mat4 trans6 = glm::mat4(1.0f); // identity
 glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
 */
 void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint& normalTransformLoc, GLuint& modelTransformLoc,
-	float deg, std::vector<glm::vec3>& Vec3) //Vec3 = rotate axis, translation, scaling
+	float deg, float deg2, std::vector<glm::vec3>& Vec3) //Vec3 = rotate axis, translation, scaling; deg2 for y rotation
 {
 	glBindVertexArray(structure.vaoId);
 	glUseProgram(shaderProgram); //changes
@@ -387,6 +417,11 @@ void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint
 	trans = glm::rotate(trans, glm::radians(deg), Vec3[0]);
 	trans = glm::translate(trans, Vec3[1]); // matrix * translate_matrix
 	trans = glm::scale(trans, Vec3[2]);
+	//if greater than 4, then it has multitexturing components
+	if (Vec3.size() >= 4)
+	{
+		trans = glm::rotate(trans, glm::radians(deg2), Vec3[3]);
+	}
 
 	//send to shader
 	glm::mat4 normalTrans = glm::transpose(glm::inverse(trans)); //changes
@@ -397,20 +432,21 @@ void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint
 	GLuint structureTexture = structure.textures[structure.materials[0].diffuse_texname];
 	glBindTexture(GL_TEXTURE_2D, structureTexture);
 
-	/*
-	* //this is for multitexturing //changesMC
+	if (Vec3.size() >= 4)
+	{
+		//this is for multitexturing //changesMC
 		glActiveTexture(GL_TEXTURE0);
-		GLuint earthTexture = earth.textures[earth.materials[0].diffuse_texname]; //morning light //changesMC
-		//GLuint earthTexture = earth.textures[earth.materials[1].diffuse_texname]; //nightLight //changesMC
-		glBindTexture(GL_TEXTURE_2D, earthTexture);
+		GLuint structureTexture = structure.textures[structure.materials[3].diffuse_texname]; //morning light //changesMC
+		glBindTexture(GL_TEXTURE_2D, structureTexture);
 
-		
+
 		//this is for the secondary map
 		glActiveTexture(GL_TEXTURE1);//changesMC
-		GLuint nightTexture = earth.textures[earth.materials[1].diffuse_texname]; //nightLight //changesMC
-		glBindTexture(GL_TEXTURE_2D, nightTexture);//changesMC
+		GLuint secondaryTex = structure.textures[structure.materials[5].diffuse_texname]; //nightLight //changesMC
+		glBindTexture(GL_TEXTURE_2D, secondaryTex);//changesMC
+	}
 		
-	*/
+	
 
 	//draw earth
 	glDrawElements(GL_TRIANGLES, structure.numFaces, GL_UNSIGNED_INT, (void*)0);
