@@ -142,10 +142,26 @@ int main() {
 		"front.png",
 		"back.png"
 	};
+	std::vector<std::string> faces1{
+		"right.png",
+		"left.png",
+		"bottom.png",
+		"top.png",
+		"front.png",
+		"back.png"
+	};
+	std::vector<std::string> faces2{
+		"right.png",
+		"left.png",
+		"bottom.png",
+		"top.png",
+		"front.png",
+		"back.png"
+	};
 
-	SkyBoxData skybox = LoadSkybox("Assets/skybox", faces); //changes
-	SkyBoxData skybox1 = LoadSkybox("Assets/skybox", faces); //changes
-	SkyBoxData skybox2 = LoadSkybox("Assets/skybox", faces); //changes
+	SkyBoxData skyboxAfternoon = LoadSkybox("Assets/skybox", faces); //changes;
+	SkyBoxData skyboxMorning = LoadSkybox("Assets/SkyboxDay", faces1); //changes
+	SkyBoxData skyboxNightTime = LoadSkybox("Assets/SkyboxNight", faces2); //changes
 #pragma endregion
 
 #pragma region Shader Loading
@@ -216,7 +232,7 @@ int main() {
 	glUniform1i(normalTexLoc, 1);//changes1
 	*/
 
-	glUniform3f(lightPoscLoc, trans1[3][0], trans1[3][1] + 1.0f, trans1[3][1]); //changes //x,z,y
+	glUniform3f(lightPoscLoc, 0.0f, 2.0f, 0.0f); //changes //x,z,y
 	glUniform3f(lightDirLoc, 1.0f, 1.0f, 1.0f); //changes
 
 #pragma endregion
@@ -256,6 +272,7 @@ int main() {
 
 	float currentX = 0.0f; //changesMC
 	float currentY = 0.0f; //changesMC
+	float timer = 0.0f; //changesMC
 
 	while (!glfwWindowShouldClose(window)) {
 		
@@ -282,11 +299,15 @@ int main() {
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - prevTime;
 
-		currentX += (deltaTime * 0.50f); //changesMC
-		currentY += (deltaTime * 0.50f); //changesMC
+		//balance na lang
+		currentX += (deltaTime * 7.0f / 60.0f); //changesMC
+		currentY += (deltaTime * 7.0f / 60.0f); //changesMC
+		//0 - 8.0f
+		timer += deltaTime;
 
+		//directional light - set a new direction
 		glUniform3f(lightDirLoc, glm::sin(currentX), glm::cos(currentY), 0); //changesMC
-		//std::cout << currentX << std::endl; //changesMC
+		std::cout << timer << std::endl; //changesMC
 
 		glm::mat4 view = glm::lookAt(cameraMovement::getInstance()->cameraPos,
 			cameraMovement::getInstance()->cameraPos + cameraMovement::getInstance()->cameraFront,
@@ -316,7 +337,25 @@ int main() {
 		glUniform1i(model_id, 1);
 
 		//Skybox display
-		DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
+		if (timer <= 40.0)
+		{
+			DrawSkybox(skyboxNightTime, skyboxShderProgram, view, projection); //changes
+		}
+		//Skybox display
+		else if (timer > 40.0f && timer <= 55.0f)
+		{
+			DrawSkybox(skyboxMorning, skyboxShderProgram, view, projection); //changes
+		}
+		//Skybox display
+		else if (timer > 55.0f && timer <= 70.0f)
+		{
+			DrawSkybox(skyboxAfternoon, skyboxShderProgram, view, projection); //changes
+			if (timer >= 70.0f)
+			{
+				//go back to night
+				timer = 10.0f;
+			}
+		}
 
 		/*//changes3
 		if(time_ticks)
@@ -445,7 +484,7 @@ void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint
 		glBindTexture(GL_TEXTURE_2D, structureTexture);
 		
 
-		std::cout << "Multi-texturing applied" << std::endl; //changesMC
+		//std::cout << "Multi-texturing applied" << std::endl; //changesMC
 		//this is for the secondary map
 		glActiveTexture(GL_TEXTURE1);//changesMC
 		GLuint secondaryTex = structure.textures[structure.materials[7].diffuse_texname]; //nightLight //changesMC
