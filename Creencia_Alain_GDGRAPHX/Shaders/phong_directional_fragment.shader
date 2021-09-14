@@ -7,6 +7,7 @@ in vec3 Normal;
 in vec2 TexCoords;
 uniform sampler2D texture_diffuse;
 uniform int model_id;
+in mat3 TBN;
 
 uniform vec3 u_light_dir;
 uniform vec3 u_;
@@ -16,6 +17,9 @@ uniform vec3 u_ambient_color;
 //this is for multitexturing
 uniform sampler2D secondary_diffuse;
 uniform vec3 u_light_pos;
+
+//for texture bumb / normal
+uniform sampler2D texture_normal;
 
 float attenuate(float value, float maximum)
 {
@@ -115,6 +119,18 @@ void directionalLight()
 	FragColor = vec4(ambient + diffuse + specular, 1.0) * texture(texture_diffuse, UV);
 }
 
+void normalBump()
+{
+	vec3 tbnNormal = texture(texture_normal, UV).rgb;
+
+	tbnNormal = TBN * tbnNormal;
+
+	float nDotL = dot(tbnNormal, -u_light_dir);
+	vec3 outColor = vec3(clamp(nDotL, 0, 1));
+
+	FragColor = vec4(outColor, 1.0) * texture(texture_diffuse, UV);
+}
+
 void main()
 {
 	if (model_id == 1)
@@ -128,6 +144,10 @@ void main()
 	if (model_id == 3)
 	{
 		pointLight();
+	}
+	if (model_id == 4)
+	{
+		normalBump();
 	}
 }
 

@@ -15,7 +15,7 @@
 
 //method declarations
 void drawObj(glm::mat4& trans, ObjData& structure, GLuint& shaderProgram, GLuint& normalTransformLoc, GLuint& modelTransformLoc,
-	float deg, float deg2, std::vector<glm::vec3>& Vec3); //Vec3 = rotate axis, translation, scaling; deg2 for y rotation
+	float deg, float deg2, std::vector<glm::vec3>& Vec3, int type); //Vec3 = rotate axis, translation, scaling; deg2 for y rotation
 
 int main() {
 	stbi_set_flip_vertically_on_load(true);
@@ -133,6 +133,14 @@ int main() {
 		1.0f,
 		treesOffsets
 	);
+	ObjData oldHouse;
+	LoadObjFile(&oldHouse, "CottageHouse/cottage_obj.obj");
+	GLfloat oldHouseOffsets[] = { 0.0f, 0.0f, 0.0f };
+	LoadObjToMemory(
+		&oldHouse,
+		1.0f,
+		oldHouseOffsets
+	);
 
 	std::vector<std::string> faces{
 		"right.png",
@@ -209,6 +217,8 @@ int main() {
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans7));
 	glm::mat4 trans8 = glm::mat4(1.0f); // identity
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans8)); //trees
+	glm::mat4 trans9 = glm::mat4(1.0f); // identity
+	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans9)); //trees
 
 	// define projection matrix
 	glm::mat4 projection = glm::mat4(1.0f);
@@ -350,11 +360,11 @@ int main() {
 		else if (timer > 55.0f && timer <= 70.0f)
 		{
 			DrawSkybox(skyboxAfternoon, skyboxShderProgram, view, projection); //changes
-			if (timer >= 70.0f)
-			{
-				//go back to night
-				timer = 10.0f;
-			}
+		}
+		if (timer >= 70.0f)
+		{
+			//go back to night
+			timer = 10.0f;
 		}
 
 		/*//changes3
@@ -369,7 +379,19 @@ int main() {
 			glm::vec3(0.0f, 0.0f, 0.0f), //translate values
 			glm::vec3(0.2f, 0.2f, 0.2f) }; //scaling values
 		drawObj(trans1, road, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, 0, vec1);
+			270.0f, 0, vec1, 1);
+
+		//set to multitext shader
+		glUniform1i(model_id, 4);
+		glUniform1i(diffuseTexLoc, 0); //changesMC; used for setting the first png in the shader
+		glUniform1i(normalTexLoc, 1); //changesMC; used for accessing the secondary png in the shader
+		//Cottage
+		std::vector <glm::vec3> vec10 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(250.0, -5.0f, 0.0f), //translate values
+			glm::vec3(2.0f, 2.0f, 2.0f), //scaling values
+			glm::vec3(0.0f, 1.0f, 0.0f) }; //rotation for y axis
+		drawObj(trans9, oldHouse, shaderProgram, normalTransformLoc, modelTransformLoc, //relevance
+			0.0f, 90.0f, vec10, 3);
 
 		//set to multitext shader
 		glUniform1i(model_id, 2);
@@ -381,7 +403,7 @@ int main() {
 			glm::vec3(2.0f, 2.0f, 2.0f), //scaling values
 			glm::vec3(0.0f, 1.0f, 0.0f)}; //rotation for y axis
 		drawObj(trans8, trees, shaderProgram, normalTransformLoc, modelTransformLoc, //relevance
-			0.0f, 90.0f, vec9);
+			0.0f, 90.0f, vec9, 2);
 
 		//back to 0 material
 		glUniform1i(diffuseTexLoc, 0); //changesMC; used for setting the first png in the shader
@@ -393,49 +415,49 @@ int main() {
 			glm::vec3(40.0f, 0.0f, -15.0f), //translate values
 			glm::vec3(3.0f, 3.0f, 1.0f) }; //scaling values
 		drawObj(trans7, earth, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, 0.0f, vec2);
+			270.0f, 0.0f, vec2, 1);
 
 		//MOON
 		std::vector <glm::vec3> vec3 = { glm::vec3(0.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(0.0f, 30.0f, 0.0f), //translate values
 			glm::vec3(0.5f, 0.5f, 0.5f) }; //scaling values
 		drawObj(trans, moon, shaderProgram, normalTransformLoc, modelTransformLoc,
-			0.0f, 0.0f, vec3);
+			0.0f, 0.0f, vec3, 1);
 
 		//Powerplant
 		std::vector <glm::vec3> vec4 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(-225.0f, -255.0f, -2.0f), //translate values
 			glm::vec3(0.5f, 0.5f, 0.5f) }; //scaling values
 		drawObj(trans2, barn, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, 0.0f, vec4);
+			270.0f, 0.0f, vec4, 1);
 
 		//Church
 		std::vector <glm::vec3> vec5 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(120.0f, 100.0f, -5.0f), //translate values
 			glm::vec3(0.03f, 0.03f, 0.03f) }; //scaling values
 		drawObj(trans3, structure, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, 0.0f, vec5);
+			270.0f, 0.0f, vec5, 1);
 
 		//BUILDING
 		std::vector <glm::vec3> vec6 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(90.0f, 100.0f, 34.0f), //translate values
 			glm::vec3(0.01f / 1.05, 0.01f / 1.05, 0.01f / 1.05) }; //scaling values
 		drawObj(trans4, structure2, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, 0.0f, vec6);
+			270.0f, 0.0f, vec6, 1);
 
 		//Grocery
 		std::vector <glm::vec3> vec7 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(-120.0f, 85.0f, -5.0f), //translate values
 			glm::vec3(0.016f, 0.016f, 0.016f) }; //scaling values
 		drawObj(trans5, structure3, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, 0.0f, vec7);
+			270.0f, 0.0f, vec7, 1);
 
 		//Stadium
 		std::vector <glm::vec3> vec8 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(150.0f, -290.0f, 0.0f), //translate values
 			glm::vec3(0.001f * 6, 0.001f * 6, 0.001f * 6) }; //scaling values
 		drawObj(trans6, structure4, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, 0.0f, vec8);
+			270.0f, 0.0f, vec8, 1);
 
 		//--- stop drawing here ---
 #pragma endregion
@@ -451,8 +473,8 @@ glm::mat4 trans6 = glm::mat4(1.0f); // identity
 glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
 */
 void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint& normalTransformLoc, GLuint& modelTransformLoc,
-	float deg, float deg2, std::vector<glm::vec3>& Vec3) //Vec3 = rotate axis, translation, scaling; deg2 for y rotation
-{
+	float deg, float deg2, std::vector<glm::vec3>& Vec3, int type) //Vec3 = rotate axis, translation, scaling; deg2 for y rotation
+{ //1 is normal, 2 is multiTex, 3 is normal
 	glBindVertexArray(structure.vaoId);
 	glUseProgram(shaderProgram); //changes
 
@@ -462,7 +484,7 @@ void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint
 	trans = glm::translate(trans, Vec3[1]); // matrix * translate_matrix
 	trans = glm::scale(trans, Vec3[2]);
 	//if greater than 4, then it has multitexturing components
-	if (Vec3.size() >= 4)
+	if (type == 2)
 	{
 		trans = glm::rotate(trans, glm::radians(deg2), Vec3[3]);
 	}
@@ -476,7 +498,7 @@ void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint
 	GLuint structureTexture = structure.textures[structure.materials[0].diffuse_texname];
 	glBindTexture(GL_TEXTURE_2D, structureTexture);
 
-	if (Vec3.size() >= 4)
+	if (type == 2)
 	{
 		//this is for multitexturing //changesMC
 		glActiveTexture(GL_TEXTURE0);
@@ -490,8 +512,20 @@ void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint
 		GLuint secondaryTex = structure.textures[structure.materials[7].diffuse_texname]; //nightLight //changesMC
 		glBindTexture(GL_TEXTURE_2D, secondaryTex);//changesMC
 	}
-		
-	
+	if (type ==3)
+	{
+		//this is for multitexturing //changesMC
+		glActiveTexture(GL_TEXTURE0);
+		GLuint structureTexture = structure.textures[structure.materials[0].diffuse_texname]; //morning light //changesMC
+		glBindTexture(GL_TEXTURE_2D, structureTexture);
+
+
+		//std::cout << "Multi-texturing applied" << std::endl; //changesMC
+		//this is for the secondary map
+		glActiveTexture(GL_TEXTURE1);//changesMC
+		GLuint secondaryTex = structure.textures[structure.materials[0].bump_texname]; //nightLight //changesMC
+		glBindTexture(GL_TEXTURE_2D, secondaryTex);//changesMC
+	}
 
 	//draw earth
 	glDrawElements(GL_TRIANGLES, structure.numFaces, GL_UNSIGNED_INT, (void*)0);
