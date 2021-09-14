@@ -209,7 +209,7 @@ int main() {
 
 	//set textures; mapping the texture unit; only used for "earth_night_fragment.shader"
 	glUniform1i(diffuseTexLoc, 0); //changesMC; used for setting the first png in the shader
-	glUniform1i(secondaryTexLoc, 1); //changesMC; used for accessing the secondary png in the shader
+	glUniform1i(secondaryTexLoc, 5); //changesMC; used for accessing the secondary png in the shader
 
 	/* //for normal map
 	glUniform1i(diffuseTexLoc, 0);//changes1
@@ -286,7 +286,7 @@ int main() {
 		currentY += (deltaTime * 0.50f); //changesMC
 
 		glUniform3f(lightDirLoc, glm::sin(currentX), glm::cos(currentY), 0); //changesMC
-		std::cout << currentX << std::endl; //changesMC
+		//std::cout << currentX << std::endl; //changesMC
 
 		glm::mat4 view = glm::lookAt(cameraMovement::getInstance()->cameraPos,
 			cameraMovement::getInstance()->cameraPos + cameraMovement::getInstance()->cameraFront,
@@ -334,6 +334,8 @@ int main() {
 
 		//set to multitext shader
 		glUniform1i(model_id, 2);
+		glUniform1i(diffuseTexLoc, 1); //changesMC; used for setting the first png in the shader
+		glUniform1i(secondaryTexLoc, 7); //changesMC; used for accessing the secondary png in the shader
 		//Trees
 		std::vector <glm::vec3> vec9 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(250.0, -5.0f, 0.0f), //translate values
@@ -341,6 +343,9 @@ int main() {
 			glm::vec3(0.0f, 1.0f, 0.0f)}; //rotation for y axis
 		drawObj(trans8, trees, shaderProgram, normalTransformLoc, modelTransformLoc, //relevance
 			0.0f, 90.0f, vec9);
+
+		//back to 0 material
+		glUniform1i(diffuseTexLoc, 0); //changesMC; used for setting the first png in the shader
 
 		//bring back to direct light
 		glUniform1i(model_id, 1);
@@ -436,13 +441,14 @@ void drawObj(glm::mat4 &trans, ObjData &structure, GLuint &shaderProgram, GLuint
 	{
 		//this is for multitexturing //changesMC
 		glActiveTexture(GL_TEXTURE0);
-		GLuint structureTexture = structure.textures[structure.materials[3].diffuse_texname]; //morning light //changesMC
+		GLuint structureTexture = structure.textures[structure.materials[1].diffuse_texname]; //morning light //changesMC
 		glBindTexture(GL_TEXTURE_2D, structureTexture);
+		
 
-
+		std::cout << "Multi-texturing applied" << std::endl; //changesMC
 		//this is for the secondary map
 		glActiveTexture(GL_TEXTURE1);//changesMC
-		GLuint secondaryTex = structure.textures[structure.materials[5].diffuse_texname]; //nightLight //changesMC
+		GLuint secondaryTex = structure.textures[structure.materials[7].diffuse_texname]; //nightLight //changesMC
 		glBindTexture(GL_TEXTURE_2D, secondaryTex);//changesMC
 	}
 		
