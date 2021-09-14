@@ -32,64 +32,77 @@ bool FileExists(const std::string& absFilename) {
 	return (stat(absFilename.c_str(), &buffer) == 0);
 }
 
+void LoadTexIntoMem(ObjData* objData, std::string& texname, std::string& baseDir, int& width, int& height);
+
 void LoadTextureData(ObjData* objData) {
 	int width, height;
 	std::string baseDir = objData->baseDir;
 	for (size_t m = 0; m < objData->materials.size(); m++) {
 		tinyobj::material_t* mp = &objData->materials[m];
 		if (mp->diffuse_texname.length() > 0) {
-			if (objData->textures.find(mp->diffuse_texname) == objData->textures.end()) {
-				GLuint textureId;
-				int comp;
-
-				std::string textureFileName = baseDir + "/" + mp->diffuse_texname;
-				if (!FileExists(textureFileName)) {
-					std::cerr << "Unable to find file: " << textureFileName << std::endl;
-					exit(1);
-				}
-				unsigned char* image = stbi_load(
-					textureFileName.c_str(),
-					&width,
-					&height,
-					&comp,
-					STBI_default
-				);
-
-				if (!image) {
-					std::cerr << "Unable to load texture: " << textureFileName << std::endl;
-					exit(1);
-				}
-
-				std::cout << "Loaded texture: " << textureFileName << std::endl;
-
-				glGenTextures(1, &textureId);
-				glBindTexture(GL_TEXTURE_2D, textureId);
-
-				GLenum format = GL_RGBA;
-				if (comp == 3) {
-					format = GL_RGB;
-				}
-				else if (comp == 4) {
-					format = GL_RGBA;
-				}
-
-				glTexImage2D(
-					GL_TEXTURE_2D,
-					0,
-					format,
-					width,
-					height,
-					0,
-					format,
-					GL_UNSIGNED_BYTE,
-					image);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-				stbi_image_free(image);
-				objData->textures.insert(std::make_pair(mp->diffuse_texname, textureId));
-			}
+			std::string texname = mp->diffuse_texname;
+			LoadTexIntoMem(objData, texname, baseDir, width, height);
 		}
+		if (mp->bump_texname.length() > 0) {
+			std::string texname = mp->bump_texname;
+			LoadTexIntoMem(objData, texname, baseDir, width, height);
+		}
+	}
+}
+
+void LoadTexIntoMem(ObjData* objData, std::string& texname, std::string& baseDir, int& width, int& height)
+{
+
+	if (objData->textures.find(texname) == objData->textures.end()) {
+		GLuint textureId;
+		int comp;
+
+		std::string textureFileName = baseDir + "/" + texname;
+		if (!FileExists(textureFileName)) {
+			std::cerr << "Unable to find file: " << textureFileName << std::endl;
+			exit(1);
+		}
+		unsigned char* image = stbi_load(
+			textureFileName.c_str(),
+			&width,
+			&height,
+			&comp,
+			STBI_default
+		);
+
+		if (!image) {
+			std::cerr << "Unable to load texture: " << textureFileName << std::endl;
+			exit(1);
+		}
+
+		std::cout << "Loaded texture: " << textureFileName << std::endl;
+
+		glGenTextures(1, &textureId);
+		glBindTexture(GL_TEXTURE_2D, textureId);
+
+		GLenum format = GL_RGBA;
+		if (comp == 3) {
+			format = GL_RGB;
+		}
+		else if (comp == 4) {
+			format = GL_RGBA;
+		}
+
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			format,
+			width,
+			height,
+			0,
+			format,
+			GL_UNSIGNED_BYTE,
+			image);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(image);
+		objData->textures.insert(std::make_pair(texname, textureId));
 	}
 }
 
