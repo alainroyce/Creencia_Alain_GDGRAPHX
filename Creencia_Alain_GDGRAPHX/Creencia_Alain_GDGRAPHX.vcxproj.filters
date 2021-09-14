@@ -51,6 +51,7 @@
     <None Include="Debug\vc142.pdb" />
     <None Include="Shaders\fragment.shader" />
     <None Include="Shaders\vertex.shader" />
+    <None Include="Shaders\phong_normal_fragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
