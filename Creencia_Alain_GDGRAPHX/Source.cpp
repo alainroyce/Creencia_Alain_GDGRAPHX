@@ -61,15 +61,6 @@ int main() {
 		earthOffsets
 	);
 
-	ObjData moon;
-	//backpack.textures = 
-	LoadObjFile(&moon, "earth/Earth.obj");
-	GLfloat moonOffsets[] = { 0.0f, 0.0f, 0.0f };
-	LoadObjToMemory(
-		&moon,
-		1.0f,
-		moonOffsets
-	);
 	ObjData barn;
 	//backpack.textures = 
 	LoadObjFile(&barn, "Powerplant/10078_Nuclear_Power_Plant_v1_L3.obj");
@@ -317,7 +308,7 @@ int main() {
 
 		//directional light - set a new direction
 		glUniform3f(lightDirLoc, glm::sin(currentX), glm::cos(currentY), 0); //changesMC
-		std::cout << timer << std::endl; //changesMC
+		//std::cout << timer << std::endl; //changesMC
 
 		glm::mat4 view = glm::lookAt(cameraMovement::getInstance()->cameraPos,
 			cameraMovement::getInstance()->cameraPos + cameraMovement::getInstance()->cameraFront,
@@ -365,6 +356,7 @@ int main() {
 		{
 			//go back to night
 			timer = 10.0f;
+			DrawSkybox(skyboxNightTime, skyboxShderProgram, view, projection); //changes
 		}
 
 		/*//changes3
@@ -387,7 +379,7 @@ int main() {
 		glUniform1i(normalTexLoc, 1); //changesMC; used for accessing the secondary png in the shader
 		//Cottage
 		std::vector <glm::vec3> vec10 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
-			glm::vec3(250.0, -5.0f, 0.0f), //translate values
+			glm::vec3(250.0, -7.5f, 0.0f), //translate values
 			glm::vec3(2.0f, 2.0f, 2.0f), //scaling values
 			glm::vec3(0.0f, 1.0f, 0.0f) }; //rotation for y axis
 		drawObj(trans9, oldHouse, shaderProgram, normalTransformLoc, modelTransformLoc, //relevance
@@ -399,7 +391,7 @@ int main() {
 		glUniform1i(secondaryTexLoc, 7); //changesMC; used for accessing the secondary png in the shader
 		//Trees
 		std::vector <glm::vec3> vec9 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
-			glm::vec3(250.0, -5.0f, 0.0f), //translate values
+			glm::vec3(290.0, -5.0f, 0.0f), //translate values
 			glm::vec3(2.0f, 2.0f, 2.0f), //scaling values
 			glm::vec3(0.0f, 1.0f, 0.0f)}; //rotation for y axis
 		drawObj(trans8, trees, shaderProgram, normalTransformLoc, modelTransformLoc, //relevance
@@ -407,22 +399,15 @@ int main() {
 
 		//back to 0 material
 		glUniform1i(diffuseTexLoc, 0); //changesMC; used for setting the first png in the shader
-
 		//bring back to direct light
 		glUniform1i(model_id, 1);
+
 		//Grass
 		std::vector <glm::vec3> vec2 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(40.0f, 0.0f, -15.0f), //translate values
 			glm::vec3(3.0f, 3.0f, 1.0f) }; //scaling values
 		drawObj(trans7, earth, shaderProgram, normalTransformLoc, modelTransformLoc,
 			270.0f, 0.0f, vec2, 1);
-
-		//MOON
-		std::vector <glm::vec3> vec3 = { glm::vec3(0.0f, 0.0f, 0.0f), //camera axis
-			glm::vec3(0.0f, 30.0f, 0.0f), //translate values
-			glm::vec3(0.5f, 0.5f, 0.5f) }; //scaling values
-		drawObj(trans, moon, shaderProgram, normalTransformLoc, modelTransformLoc,
-			0.0f, 0.0f, vec3, 1);
 
 		//Powerplant
 		std::vector <glm::vec3> vec4 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
@@ -431,19 +416,15 @@ int main() {
 		drawObj(trans2, barn, shaderProgram, normalTransformLoc, modelTransformLoc,
 			270.0f, 0.0f, vec4, 1);
 
+		glUniform1i(model_id, 3);
+		glUniform3f(lightPoscLoc, 0, 2, 2); //changes //x,z,y
 		//Church
 		std::vector <glm::vec3> vec5 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(120.0f, 100.0f, -5.0f), //translate values
 			glm::vec3(0.03f, 0.03f, 0.03f) }; //scaling values
 		drawObj(trans3, structure, shaderProgram, normalTransformLoc, modelTransformLoc,
 			270.0f, 0.0f, vec5, 1);
-
-		//BUILDING
-		std::vector <glm::vec3> vec6 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
-			glm::vec3(90.0f, 100.0f, 34.0f), //translate values
-			glm::vec3(0.01f / 1.05, 0.01f / 1.05, 0.01f / 1.05) }; //scaling values
-		drawObj(trans4, structure2, shaderProgram, normalTransformLoc, modelTransformLoc,
-			270.0f, 0.0f, vec6, 1);
+		glUniform3f(lightPoscLoc, 0, 2, 2); //changes //x,z,y
 
 		//Grocery
 		std::vector <glm::vec3> vec7 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
@@ -452,12 +433,33 @@ int main() {
 		drawObj(trans5, structure3, shaderProgram, normalTransformLoc, modelTransformLoc,
 			270.0f, 0.0f, vec7, 1);
 
+		//bring back to direct light
+		glUniform1i(model_id, 1);
+		glUniform3f(lightPoscLoc, 0, 2, 0); //changes //x,z,y
+		glUniform3f(lightPoscLoc, 0.0f, 2.0f, 0.0f); //changes //x,z,y
+
 		//Stadium
 		std::vector <glm::vec3> vec8 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(150.0f, -290.0f, 0.0f), //translate values
 			glm::vec3(0.001f * 6, 0.001f * 6, 0.001f * 6) }; //scaling values
 		drawObj(trans6, structure4, shaderProgram, normalTransformLoc, modelTransformLoc,
 			270.0f, 0.0f, vec8, 1);
+
+		//spotlight
+		glUniform1i(model_id, 5);
+		glUniform3f(lightPoscLoc, 0, 0, 0); //changes //x,z,y
+		glUniform3f(lightDirLoc, 1.0f, 0.0f, 0.0f); //changes
+		//BUILDING
+		std::vector <glm::vec3> vec6 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
+			glm::vec3(90.0f, 100.0f, 34.0f), //translate values
+			glm::vec3(0.01f / 1.05, 0.01f / 1.05, 0.01f / 1.05) }; //scaling values
+		drawObj(trans4, structure2, shaderProgram, normalTransformLoc, modelTransformLoc,
+			270.0f, 0.0f, vec6, 1);
+
+		//bring back to direct light
+		glUniform1i(model_id, 1);
+		glUniform3f(lightPoscLoc, 0, 2, 0); //changes //x,z,y
+		glUniform3f(lightPoscLoc, 0.0f, 2.0f, 0.0f); //changes //x,z,y
 
 		//--- stop drawing here ---
 #pragma endregion

@@ -27,38 +27,48 @@ float attenuate(float value, float maximum)
 	return 1.0 / (pow(5 * clampedValue / maximum, 2) + 1);
 }
 
+
+float attenuateSpot (float value, float minimum, float maximum)
+{
+	return 1.0f - (clamp(value, minimum, maximum) - minimum) / (maximum - minimum);
+}
+
+float simple_attenuate(float value, float maximum)
+{
+	if (value > maximum)
+	{
+		value = 0.0;
+	}
+	else
+	{
+		value = 1.0;
+	}
+	return value;
+}
+
 void pointLight()
 {
 	vec3 lightVector = normalize(u_light_pos - FragPos);
 
 	float distance = length(u_light_pos - FragPos);
-	float diff = max(dot(Normal, lightVector), 0.0);
-
-	//phong shading
-	vec3 reflectDir = reflect(-lightVector, Normal);
-
-	vec3 viewDir = normalize(u_camera_pos - FragPos);
-	float spec = pow(max(dot(reflectDir, viewDir), 0.1), 4);
-	//blinn phong
-	//spec = pow(max(dot(halfwayDir, normal), 0), 64);
-
-	//color value of the specular highlight color
-	vec3 lightColor = vec3(1.0, 0.0, 0.0); //color red
-
-	vec3 ambient = u_ambient_color * lightColor * vec3(texture(texture_diffuse, TexCoords));
-	//vec3 ambient = u_ambient_color * lightColor;
-
-	vec3 diffuse = diff * vec3(max(dot(Normal, lightVector), 0.0)) * lightColor * vec3(texture(texture_diffuse, TexCoords));
+	vec3 lightColor = vec3(1.0, 1.0, 1.0); //color red
 
 	//shininess
 	float specularStrength = 0.3;
-	vec3 specular = specularStrength * spec * lightColor * vec3(texture(texture_diffuse, TexCoords));;
+	vec3 viewDir = normalize(u_camera_pos - FragPos);
+	//phong shading
+	vec3 reflectDir = reflect(-lightVector, Normal);
 
-	float gradient = attenuate(distance, 30.0);
+	float spec = pow(max(dot(reflectDir, viewDir), 0.0), 4);
 
-	//FragColor = vec4(ambient + (diffuse + specular) * gradient, 1.0);
-	FragColor = vec4(u_color / 10 + (ambient + (diffuse * 30.0 + specular * 30.0) * gradient), 1.0) * texture(texture_diffuse, UV);
-	//FragColor = vec4(u_color / 10 + (ambient + (diffuse * 3.0 + specular * 3.0) * gradient), 1.0) * texture(texture_diffuse, UV);
+	vec3 specular = specularStrength * spec * lightColor;
+
+	vec3 diffuse = vec3(max(dot(Normal, lightVector), 0.0)) * lightColor;
+	vec3 ambient = u_ambient_color * lightColor;
+
+	float gradient = attenuate(distance, 25.0);
+
+	FragColor = vec4(ambient + (diffuse + specular) * gradient, 1.0) * texture(texture_diffuse, UV);
 }
 
 void multiTexturing()
@@ -66,8 +76,6 @@ void multiTexturing()
 	vec3 lightVector = normalize(u_light_pos - FragPos);
 
 	float distance = length(u_light_pos - FragPos);
-	//disable for now
-	//float gradient = attenuate(distance, 30.0);
 
 	vec3 lightColor = vec3(1.0, 1.0, 1.0); //color white
 
@@ -122,32 +130,47 @@ void directionalLight()
 void normalBump()
 {
 	vec3 lightVector = normalize(u_light_pos - FragPos);
+	vec3 texNormal = texture(texture_normal, UV).rgb;
+
+	texNormal = TBN * texNormal;
+
+	float NdotL = dot(texNormal, u_light_dir);
+	vec3 normalMap = vec3(clamp(NdotL, 0, 1));
+
+	FragColor = vec4(normalMap, 1.0) * texture(texture_diffuse, UV);
+}
+
+void spotLight()
+{
+	vec3 lightToSurface = normalize(u_light_pos - FragPos);
+	vec3 lightDir = normalize(-u_light_dir);
 
 	float distance = length(u_light_pos - FragPos);
 
-
+	//color value of the specular highlight color
 	vec3 lightColor = vec3(1.0, 1.0, 1.0); //color red
-	vec3 tbnNormal = texture(texture_normal, UV).rgb;
 
-	///convert pixel to vector
-	tbnNormal = tbnNormal * 2.0 - 1.0;
-	tbnNormal = normalize(TBN * tbnNormal);
-
-
-	vec3 reflectDir = reflect(-lightVector, tbnNormal);
-
+	float specularStrength = 0.3;
 	vec3 viewDir = normalize(u_camera_pos - FragPos);
-	float spec = pow(max(dot(reflectDir, viewDir), 0.1), 4);
+	//phong shading
+	vec3 reflectDir = reflect(-lightDir, Normal); //ndotl
 
-	float specularStrength = 2.0;
+	float spec = pow(max(dot(reflectDir, viewDir), 0.0), 4);
+
+	//blinn phong
+	//spec = pow(max(dot(halfwayDir, normal), 0), 64);
 	vec3 specular = specularStrength * spec * lightColor;
 
-	vec3 diffuse = vec3(max(dot(tbnNormal, lightVector), 0.0)) * lightColor;
+	vec3 diffuse = vec3(max(dot(Normal, lightDir), 0.0)) * lightColor;
 	vec3 ambient = u_ambient_color * lightColor;
 
-	//FragColor = vec4(tbnNormal);// for debug purposes turns the object red and blue
-	//texture(texture_normal, UV);
-	FragColor = vec4(ambient + (diffuse + specular), 4.0) * texture(texture_diffuse, UV);// applies the normal mapping
+	float angle = abs(acos(dot(lightDir, lightToSurface)));
+	//radius length
+	//float gradient = simple_attenuate(angle, 0.1);
+	float gradient = attenuateSpot(angle, 0.0, 1.0);
+
+	FragColor = vec4(ambient + (diffuse + specular) * gradient, 1.0) * texture(texture_diffuse, UV);
+	//FragColor = vec4(u_color / 10 + (ambient + (diffuse + specular) * gradient), 1.0) * texture(texture_diffuse, UV);
 }
 
 void main()
@@ -167,6 +190,10 @@ void main()
 	if (model_id == 4)
 	{
 		normalBump();
+	}
+	if (model_id == 5)
+	{
+		spotLight();
 	}
 }
 
