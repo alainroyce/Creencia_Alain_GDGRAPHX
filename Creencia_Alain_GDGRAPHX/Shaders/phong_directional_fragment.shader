@@ -139,7 +139,7 @@ void normalBump()
 
 	FragColor = vec4(normalMap, 1.0) * texture(texture_diffuse, UV);
 }
-
+/
 void spotLight()
 {
 	vec3 lightToSurface = normalize(u_light_pos - FragPos);
