@@ -78,7 +78,7 @@ void cameraMovement :: clampMovement()
 }
 
 //properties
-glm::vec3 cameraMovement :: cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
+glm::vec3 cameraMovement :: cameraPos = glm::vec3(0.0f, 0.0f, 50.0f);
 glm::vec3 cameraMovement:: cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraMovement:: cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float cameraMovement:: yaw = -90.0f;
