@@ -27,7 +27,8 @@ enum SceneState {
 	SCENE_2,
 	SCENE_3,
 	SCENE_4,
-	SCENE_5
+	SCENE_5,
+	SCENE_6
 };
 
 SceneState currentScene = SCENE_1;
@@ -49,7 +50,7 @@ int main() {
 
 	// create window 
 	GLFWwindow* window;
-	window = glfwCreateWindow(1024, 768, "Machine Project: Creencia and Celestial", NULL, NULL);
+	window = glfwCreateWindow(1024, 768, "Parcm Creencia-Villegas", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to load window! \n");
 		return -1;
@@ -151,15 +152,6 @@ int main() {
 		roadOffsets
 	);
 
-	std::vector<std::string> faces{
-		"right.png",
-		"left.png",
-		"bottom.png",
-		"top.png",
-		"front.png",
-		"back.png"
-	};
-	SkyBoxData skybox = LoadSkybox("Assets/skybox", faces); //changes
 #pragma endregion
 
 #pragma region Shader Loading
@@ -248,12 +240,11 @@ int main() {
 
 	//depth testing
 	glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_ALWAYS); // set the depth test function
+	
 
 	//face culling
 	glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK); // set which face to cull
-	//glFrontFace(GL_CCW); // set the front face orientation
+	
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -336,9 +327,7 @@ int main() {
 		deltaTime = currentTime - prevTime;
 		prevTime = currentTime;
 
-		//Skybox display
-		//DrawSkybox(skybox, skyboxShderProgram, view, projection); //changes
-
+		
 
 
 		//Grass
@@ -432,10 +421,7 @@ int main() {
 	}
 	return 0;
 }
-/*
-glm::mat4 trans6 = glm::mat4(1.0f); // identity
-glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
-*/
+
 void drawObj(glm::mat4& trans, ObjData& structure, GLuint& shaderProgram, GLuint& normalTransformLoc, GLuint& modelTransformLoc,
 	float deg, std::vector<glm::vec3>& Vec3) //Vec3 = rotate axis, translation, scaling
 {

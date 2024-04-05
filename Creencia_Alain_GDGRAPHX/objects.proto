@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package objects;
+
+message Vertex {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message Texture {
+    string filename = 1;
+    // Add more fields as needed (e.g., texture coordinates, type, etc.)
+}
+
+message Material {
+    string name = 1;
+    Texture diffuse_texture = 2;
+    // Add more fields as needed (e.g., specular texture, normal map, etc.)
+}
+
+message Object {
+    string name = 1;
+    repeated Vertex vertices = 2;
+    repeated uint32 indices = 3;
+    Material material = 4;
+    // Add more fields as needed (e.g., transformations, additional textures, etc.)
+}
+
+message Scene {
+    repeated Object objects = 1;
+    // Add more fields as needed (e.g., lights, cameras, etc.)
+}
