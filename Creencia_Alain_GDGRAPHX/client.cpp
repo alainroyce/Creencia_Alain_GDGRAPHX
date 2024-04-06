@@ -87,32 +87,32 @@ int main(int argc, char** argv) {
     client.LoadObjects(123);
 
 #pragma region Initialization
-    //initialize glfw
-    if (glfwInit() != GLFW_TRUE) {
-        fprintf(stderr, "Failed to initialized! \n");
+    // Initialize GLFW
+    if (!glfwInit()) {
+        fprintf(stderr, "Failed to initialize GLFW\n");
         return -1;
     }
 
-    // set opengl version to 3.3
+    // Set GLFW window hints
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // create window 
-    GLFWwindow* window;
-    window = glfwCreateWindow(1024, 768, "Parcm Creencia-Villegas", NULL, NULL);
-    if (window == NULL) {
-        fprintf(stderr, "Failed to load window! \n");
+    // Create a GLFW window
+    GLFWwindow* window = glfwCreateWindow(1024, 768, "Parcm Creencia-Villegas", NULL, NULL);
+    if (!window) {
+        fprintf(stderr, "Failed to create GLFW window\n");
+        glfwTerminate();
         return -1;
     }
     glfwMakeContextCurrent(window);
-    // Set GLFW input mode
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-    //initialize glew
+    // Initialize GLEW
     glewExperimental = true;
     if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Failed to initialize GLEW\n");
+        glfwTerminate();
         return -1;
     }
 
@@ -121,9 +121,7 @@ int main(int argc, char** argv) {
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
-
 #pragma endregion
-
 #pragma region Shader Loading
 
     //LoadSkybox shader
@@ -173,7 +171,7 @@ int main(int argc, char** argv) {
 #pragma endregion
 
     // set bg color to green
-    //glClearColor(0.4f, 0.4f, 0.0f, 0.0f);
+   //glClearColor(0.4f, 0.4f, 0.0f, 0.0f);
     // timer for the switching view
     float changeViewTimer = 0.0f;
     float changeView = 3.0f;
