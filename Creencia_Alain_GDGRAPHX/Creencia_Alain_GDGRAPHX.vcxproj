@@ -163,7 +163,6 @@
     <None Include="Debug\Creencia_Alain_GDGRAPHX.ilk" />
     <None Include="Debug\vc142.idb" />
     <None Include="Debug\vc142.pdb" />
-    <None Include="objects.proto" />
     <None Include="packages.config" />
     <None Include="Shaders\fragment.shader" />
     <None Include="Shaders\phong_directional_fragment.shader" />
@@ -184,7 +183,6 @@
     <ClCompile Include="..\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Classes\cameraMovement.cpp" />
     <ClCompile Include="EngineProfiler.cpp" />
-    <ClCompile Include="server.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>

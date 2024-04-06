@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\alain\source\repos\SFML_AlainCreencia\Creencia_Alain_GDGRAPHX\Creencia_Alain_GDGRAPHX\server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\alain\source\repos\SFML_AlainCreencia\Creencia_Alain_GDGRAPHX\Creencia_Alain_GDGRAPHX\SceneObject.grpc.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\alain\source\repos\SFML_AlainCreencia\Creencia_Alain_GDGRAPHX\Creencia_Alain_GDGRAPHX\SceneObject.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\alain\source\repos\SFML_AlainCreencia\Creencia_Alain_GDGRAPHX\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{DD9E9CC3-2AC1-3C12-9C91-BC2268B9F313}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+message Vector3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message ObjectMsg {
+    string modelName = 1;
+    Vector3 position = 2;
+    Vector3 rotation = 3;
+    Vector3 scale = 4;
+}
+
+message ObjModel {
+    string modelName = 1;
+    repeated Vector3 vertices = 2;
+    repeated Vector3 normals = 3;
+    repeated uint32 indices = 4;
+}
+
+message Integer {
+    int32 integer = 1;
+}
+
+message Float {
+    float value = 1;
+}
+
+service SceneLoader {
+    rpc LoadObjects(Integer) returns (stream ObjModel);
+    rpc SceneLoadingProgess(Integer) returns (Float);
+}

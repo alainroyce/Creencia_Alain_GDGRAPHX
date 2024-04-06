@@ -182,19 +182,7 @@ int main() {
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 	glm::mat4 trans1 = glm::mat4(1.0f); // identity
 	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans1));
-	glm::mat4 trans2 = glm::mat4(1.0f); // identity
-	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
-	glm::mat4 trans3 = glm::mat4(1.0f); // identity
-	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans3));
-	glm::mat4 trans4 = glm::mat4(1.0f); // identity
-	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans4));
-	glm::mat4 trans5 = glm::mat4(1.0f); // identity
-	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans5));
-	glm::mat4 trans6 = glm::mat4(1.0f); // identity
-	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans6));
-	glm::mat4 trans7 = glm::mat4(1.0f); // identity
-	glUniformMatrix4fv(modelTransformLoc, 1, GL_FALSE, glm::value_ptr(trans7));
-
+	
 	// define projection matrix
 	glm::mat4 projection = glm::mat4(1.0f);
 	//glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -235,7 +223,7 @@ int main() {
 	//cameraMovement initialization
 	cameraMovement::initialize();
 
-	//glfwSetCursorPosCallback(window, cameraMovement::getInstance()->mouse_callback);
+	glfwSetCursorPosCallback(window, cameraMovement::getInstance()->mouse_callback);
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//depth testing
@@ -334,7 +322,7 @@ int main() {
 		std::vector <glm::vec3> vec2 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 			glm::vec3(40.0f, 0.0f, -15.0f), //translate values
 			glm::vec3(3.0f, 3.0f, 1.0f) }; //scaling values
-		drawObj(trans7, earth, shaderProgram, normalTransformLoc, modelTransformLoc,
+		drawObj(trans1, earth, shaderProgram, normalTransformLoc, modelTransformLoc,
 			270.0f, vec2);
 
 		//MOON
@@ -354,7 +342,7 @@ int main() {
 			std::vector <glm::vec3> vec4 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 				glm::vec3(-225.0f, -255.0f, -2.0f), //translate values
 				glm::vec3(0.5f, 0.5f, 0.5f) }; //scaling values
-			drawObj(trans2, barn, shaderProgram, normalTransformLoc, modelTransformLoc,
+			drawObj(trans1, barn, shaderProgram, normalTransformLoc, modelTransformLoc,
 				270.0f, vec4);
 		}
 		else if (currentScene == SCENE_2) {
@@ -368,14 +356,14 @@ int main() {
 			std::vector <glm::vec3> vec5 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 				glm::vec3(120.0f, 100.0f, -5.0f), //translate values
 				glm::vec3(0.03f, 0.03f, 0.03f) }; //scaling values
-			drawObj(trans3, structure, shaderProgram, normalTransformLoc, modelTransformLoc,
+			drawObj(trans1, structure, shaderProgram, normalTransformLoc, modelTransformLoc,
 				270.0f, vec5);
 
 			//BUILDING
 			std::vector <glm::vec3> vec6 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 				glm::vec3(90.0f, 100.0f, 34.0f), //translate values
 				glm::vec3(0.01f / 1.05, 0.01f / 1.05, 0.01f / 1.05) }; //scaling values
-			drawObj(trans4, structure2, shaderProgram, normalTransformLoc, modelTransformLoc,
+			drawObj(trans1, structure2, shaderProgram, normalTransformLoc, modelTransformLoc,
 				270.0f, vec6);
 		}
 		else if (currentScene == SCENE_3) {
@@ -389,13 +377,13 @@ int main() {
 			std::vector <glm::vec3> vec8 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 				glm::vec3(150.0f, -290.0f, 0.0f), //translate values
 				glm::vec3(0.001f * 6, 0.001f * 6, 0.001f * 6) }; //scaling values
-			drawObj(trans6, structure4, shaderProgram, normalTransformLoc, modelTransformLoc,
+			drawObj(trans1, structure4, shaderProgram, normalTransformLoc, modelTransformLoc,
 				270.0f, vec8);
 			//Grocery
 			std::vector <glm::vec3> vec7 = { glm::vec3(1.0f, 0.0f, 0.0f), //camera axis
 				glm::vec3(-120.0f, 85.0f, -5.0f), //translate values
 				glm::vec3(0.016f, 0.016f, 0.016f) }; //scaling values
-			drawObj(trans5, structure3, shaderProgram, normalTransformLoc, modelTransformLoc,
+			drawObj(trans1, structure3, shaderProgram, normalTransformLoc, modelTransformLoc,
 				270.0f, vec7);
 		}
 		else if (currentScene == SCENE_4) {

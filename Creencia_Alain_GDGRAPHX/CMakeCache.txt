@@ -188,6 +188,15 @@ CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=C:\vcpkg/scripts/buildsystems/vcpkg.cmake
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Value Computed by CMake
+ClientServerP3_BINARY_DIR:STATIC=C:/Users/alain/source/repos/SFML_AlainCreencia/Creencia_Alain_GDGRAPHX/Creencia_Alain_GDGRAPHX
+
+//Value Computed by CMake
+ClientServerP3_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+ClientServerP3_SOURCE_DIR:STATIC=C:/Users/alain/source/repos/SFML_AlainCreencia/Creencia_Alain_GDGRAPHX
+
 //Path to a library.
 LIB_EAY_DEBUG:FILEPATH=C:/vcpkg/installed/x64-windows/debug/lib/libcrypto.lib
 

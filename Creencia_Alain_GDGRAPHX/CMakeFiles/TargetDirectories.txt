@@ -1,0 +1,4 @@
+C:/Users/alain/source/repos/SFML_AlainCreencia/Creencia_Alain_GDGRAPHX/Creencia_Alain_GDGRAPHX/CMakeFiles/server.dir
+C:/Users/alain/source/repos/SFML_AlainCreencia/Creencia_Alain_GDGRAPHX/Creencia_Alain_GDGRAPHX/CMakeFiles/client.dir
+C:/Users/alain/source/repos/SFML_AlainCreencia/Creencia_Alain_GDGRAPHX/Creencia_Alain_GDGRAPHX/CMakeFiles/ALL_BUILD.dir
+C:/Users/alain/source/repos/SFML_AlainCreencia/Creencia_Alain_GDGRAPHX/Creencia_Alain_GDGRAPHX/CMakeFiles/ZERO_CHECK.dir

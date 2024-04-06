@@ -1,5 +1,7 @@
 #include "cameraMovement.h"
-
+#include "imgui.h"
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 cameraMovement::cameraMovement()
 {
 
@@ -92,6 +94,7 @@ float cameraMovement:: lastY = 768 / 2.0;
 
 void cameraMovement :: mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+	ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 	if (firstMouse)
 	{
 		lastX = xpos;
