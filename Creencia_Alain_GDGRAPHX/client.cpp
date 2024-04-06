@@ -4,6 +4,13 @@
 #include <string>
 #include <grpcpp/grpcpp.h>
 #include "SceneObject.grpc.pb.h"
+#include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
+
+
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -59,6 +66,33 @@ int main(int argc, char** argv) {
     // Perform RPC calls
     client.LoadObjects(123);
 
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW" << std::endl;
+        return -1;
+    }
 
+    //Create a GLFW window
+        GLFWwindow * window = glfwCreateWindow(1280, 720, "Parcm", NULL, NULL);
+    if (!window) {
+        std::cerr << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    // Initialize ImGui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
+    while (!glfwWindowShouldClose(window)) {
+      
+       
+    }
+
+  
     return 0;
 }
