@@ -84,6 +84,12 @@
     <ClCompile Include="EngineProfiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SceneObject.grpc.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneObject.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="skybox.h">
@@ -136,6 +142,12 @@
     </ClInclude>
     <ClInclude Include="EngineProfiler.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.grpc.pb.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.pb.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

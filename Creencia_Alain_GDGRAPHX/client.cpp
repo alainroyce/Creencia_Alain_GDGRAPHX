@@ -51,6 +51,8 @@ public:
         }
     }
 
+    
+
 
 
 private:
@@ -85,7 +87,7 @@ int main(int argc, char** argv) {
 
     // Perform RPC calls
     client.LoadObjects(123);
-
+    
 #pragma region Initialization
     // Initialize GLFW
     if (!glfwInit()) {

@@ -183,6 +183,8 @@
     <ClCompile Include="..\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Classes\cameraMovement.cpp" />
     <ClCompile Include="EngineProfiler.cpp" />
+    <ClCompile Include="SceneObject.grpc.pb.cc" />
+    <ClCompile Include="SceneObject.pb.cc" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +201,8 @@
     <ClInclude Include="EngineProfiler.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="obj_mesh.h" />
+    <ClInclude Include="SceneObject.grpc.pb.h" />
+    <ClInclude Include="SceneObject.pb.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="skybox.h" />
     <ClInclude Include="stb_image.h" />
